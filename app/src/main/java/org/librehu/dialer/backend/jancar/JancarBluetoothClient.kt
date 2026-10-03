@@ -75,7 +75,10 @@ internal class JancarBluetoothClient(context: Context) {
                     val powered = data.readInt() != 0
                     _state.value = _state.value.copy(bluetoothPowered = powered)
                 }
-                8 -> data.readInt() // Voice routing event; mapping not confirmed yet.
+                8 -> {
+                    val status = data.readInt()
+                    _state.value = _state.value.copy(voiceRouteEvent = "Jancar voice route event $status")
+                }
                 else -> return super.onTransact(code, data, reply, flags)
             }
             if (reply != null) reply.writeNoException()
@@ -221,6 +224,8 @@ internal class JancarBluetoothClient(context: Context) {
         writeStrongBinder(execCallback)
     }
 
+    fun transferCall(): Boolean = runCommand("Audio transfer request sent", TRANSACTION_TRANSFER_CALL)
+
     fun sendDtmf(digit: Int): Boolean = runCommand("DTMF request sent", TRANSACTION_REQUEST_DTMF) {
         writeInt(digit)
         writeStrongBinder(execCallback)
@@ -289,6 +294,7 @@ internal class JancarBluetoothClient(context: Context) {
         private const val TRANSACTION_HANG_PHONE = 25
         private const val TRANSACTION_REJECT_PHONE = 26
         private const val TRANSACTION_LISTEN_PHONE = 27
+        private const val TRANSACTION_TRANSFER_CALL = 29
         private const val TRANSACTION_REQUEST_DTMF = 31
         private const val TRANSACTION_MUTE_MIC = 32
         private const val TRANSACTION_REQUEST_LISTENER = 38
@@ -306,6 +312,7 @@ internal data class JancarState(
     val connectionDetails: String? = null,
     val callEvent: String? = null,
     val callDetails: String? = null,
+    val voiceRouteEvent: String? = null,
     val a2dpEvent: String? = null,
     val musicInfo: String? = null,
     val lastCommandResult: String? = null,
