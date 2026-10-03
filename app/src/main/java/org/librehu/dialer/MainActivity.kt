@@ -44,7 +44,7 @@ import java.util.Date
 import java.util.Locale
 import org.librehu.dialer.backend.jancar.JancarBluetoothClient
 
-private data class DialerPalette(
+internal data class DialerPalette(
     val dark: Boolean,
     val background: Color,
     val surface: Color,
