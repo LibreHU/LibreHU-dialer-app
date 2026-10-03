@@ -1,8 +1,12 @@
 package org.librehu.dialer
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -16,6 +20,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.core.content.ContextCompat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,14 +75,6 @@ private enum class Tab(val title: String) { Favorites("Favorites"), Recents("Rec
 private enum class CallState { None, Calling, Connected }
 internal data class Person(val name: String, val number: String, val initials: String, val detail: String)
 
-private val demo = listOf(
-    Person("Alex Morgan", "+33 6 12 34 56 78", "AM", "Mobile · 10:42"),
-    Person("Camille Bernard", "+33 6 23 45 67 89", "CB", "Mobile · Yesterday"),
-    Person("Sam Martin", "+33 7 34 56 78 90", "SM", "Mobile · Monday"),
-    Person("Garage", "+33 4 90 00 12 34", "G", "Work · 12 Sep"),
-    Person("Jordan Lee", "+33 6 45 67 89 01", "JL", "Mobile · 9 Sep")
-)
-
 class MainActivity : ComponentActivity() {
     private lateinit var themeFollower: ThemeFollower
 
@@ -90,7 +89,7 @@ class MainActivity : ComponentActivity() {
             window.decorView.systemUiVisibility = if (dark) 0 else
                 android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         }
-        setContent { DialerApp() }
+        setContent { DialerApp(intent.getStringExtra(EXTRA_OPEN_TAB)) }
     }
 
     override fun onStart() {
@@ -105,12 +104,36 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun DialerApp() {
+private fun DialerApp(initialTab: String? = null) {
     var tab by remember { mutableStateOf(Tab.Favorites) }
     var query by remember { mutableStateOf("") }
     var number by remember { mutableStateOf("") }
     var selected by remember { mutableStateOf<Person?>(null) }
     var call by remember { mutableStateOf(CallState.None) }
+    val context = LocalContext.current
+    var dataRefresh by remember { mutableIntStateOf(0) }
+    var deviceContacts by remember { mutableStateOf<List<Person>>(emptyList()) }
+    var deviceRecents by remember { mutableStateOf<List<Person>>(emptyList()) }
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { dataRefresh++ }
+    LaunchedEffect(initialTab) {
+        if (initialTab != null) {
+            val needed = when (tab) {
+                Tab.Contacts -> arrayOf(Manifest.permission.READ_CONTACTS)
+                Tab.Recents, Tab.Favorites -> arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
+                Tab.Keypad, Tab.Settings -> emptyArray()
+            }
+            val missing = needed.filter { ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
+            if (missing.isNotEmpty()) permissionLauncher.launch(missing.toTypedArray())
+        }
+    }
+    LaunchedEffect(tab, dataRefresh) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            deviceContacts = withContext(Dispatchers.IO) { readDeviceContacts(context) }
+        }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED) {
+            deviceRecents = withContext(Dispatchers.IO) { readDeviceCallLog(context) }
+        }
+    }
     val p = DialerColors.palette
     val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
     val scheme = if (p.dark) {
@@ -182,7 +205,7 @@ private fun DialerApp() {
                         Tab.Favorites -> {
                             Heading("Favorites", "Your people, one tap away")
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                demo.take(4).forEach { person ->
+                                deviceContacts.take(4).forEach { person ->
                                     Column(Modifier.weight(1f).clip(RoundedCornerShape(22.dp)).background(DialerColors.Card)
                                         .clickable { selected = person; number = person.number }.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                                         Avatar(person, 58); Spacer(Modifier.height(10.dp))
@@ -198,12 +221,12 @@ private fun DialerApp() {
                             }
                             Spacer(Modifier.height(14.dp)); Heading("Recent calls", "Your latest conversations")
                             LazyColumn(Modifier.fillMaxSize().clip(RoundedCornerShape(22.dp)).background(DialerColors.Card), contentPadding = PaddingValues(8.dp)) {
-                                items(demo.take(3)) { person ->
+                                items(deviceRecents.take(5)) { person ->
                                     PersonRow(person, { selected = person; number = person.number }, { selected = person; number = person.number; call = CallState.Calling })
                                 }
                             }
                         }
-                        Tab.Recents -> ContactList("Recent calls", "Incoming, outgoing and missed", demo,
+                        Tab.Recents -> ContactList("Recent calls", "Incoming, outgoing and missed", deviceRecents,
                             { selected = it; number = it.number }, { selected = it; number = it.number; call = CallState.Calling })
                         Tab.Contacts -> {
                             Heading("Contacts", "Find someone to call")
@@ -217,7 +240,7 @@ private fun DialerApp() {
                                     })
                             }
                             Spacer(Modifier.height(10.dp))
-                            ContactList("All contacts", "Demo data", demo.filter { it.name.contains(query, true) || it.number.contains(query) },
+                            ContactList("All contacts", "Contacts from this device", deviceContacts.filter { it.name.contains(query, true) || it.number.contains(query) },
                                 { selected = it; number = it.number }, { selected = it; number = it.number; call = CallState.Calling })
                         }
                         Tab.Keypad -> {
