@@ -154,13 +154,8 @@ class CallOverlayService : Service() {
         }
         listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#").forEach { digit ->
             keypadPanel?.addView(makeButton(digit) {
-                val numeric = digit.toIntOrNull()
-                if (numeric != null) {
-                    val ok = btClient.sendDtmf(numeric)
-                    statusText?.text = if (ok) "DTMF $digit envoyé" else btClient.state.value.lastError ?: "Échec DTMF"
-                } else {
-                    statusText?.text = "DTMF $digit non pris en charge par l'API actuellement validée"
-                }
+                val ok = btClient.sendDtmf(digit.single())
+                statusText?.text = if (ok) "DTMF $digit envoyé" else btClient.state.value.lastError ?: "Échec DTMF"
             }, GridLayout.LayoutParams().apply {
                 width = dp(76)
                 height = dp(42)
