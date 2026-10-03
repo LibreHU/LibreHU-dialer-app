@@ -158,14 +158,14 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
                         }
                     }
                     Spacer(Modifier.weight(1f))
-                    Icon(Icons.Default.BluetoothDisabled, "Bluetooth disconnected", tint = DialerColors.Muted)
+                    Icon(if (btState.serviceAvailable && btState.bluetoothPowered == true) Icons.Default.Bluetooth else Icons.Default.BluetoothDisabled, "Jancar Bluetooth state", tint = DialerColors.Muted)
                     Text("PHONE", color = DialerColors.Muted, fontSize = 9.sp, letterSpacing = 1.2.sp)
                 }
                 Column(Modifier.weight(1f).fillMaxHeight()) {
                     Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(DialerColors.Card).padding(horizontal = 20.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
                             Text("Phone", fontSize = 25.sp, fontWeight = FontWeight.SemiBold)
-                            Text(btState.serviceMessage, color = DialerColors.Muted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(btState.connectionEvent ?: btState.serviceMessage, color = DialerColors.Muted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
                         Row(Modifier.clip(CircleShape).background(DialerColors.Raised).padding(horizontal = 12.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {
                             Box(Modifier.size(7.dp).clip(CircleShape).background(if (btState.serviceAvailable) DialerColors.Accent else DialerColors.Muted))
