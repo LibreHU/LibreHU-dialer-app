@@ -46,17 +46,18 @@ The HFP path involves Android's Bluetooth Headset Client / Telecom components, i
 
 ### Implementation rule
 
-1. Bind to the exported `com.jancar.btservice` Binder service and establish its exact method signatures and callback protocol from the APK before invoking it.
-2. Keep a `BluetoothPhoneRepository` / `JancarBluetoothClient` behind an interface; the Compose screens must not call Binder methods directly.
-3. Use the service for call setup / answer / hangup, call state, contact synchronization and audio transfer where supported.
-4. Use `LibreHU-service` only for optional vehicle state or audio-DSP controls.
-5. Never open `/dev/ttyS1` from the dialer. `LibreHU-service` is the single owner of the MCU UART; competing readers steal frames.
-6. Display disconnected / unsupported states honestly. Never simulate a real active call after a Binder failure.
+1. The `ivi` branch binds explicitly to `com.jancar.btservice.bluetooth.BluetoothService` using `com.jancar.btservice.action.bluetooth`.
+2. `backend/jancar/JancarBluetoothClient.kt` owns Binder calls and callback handling; Compose screens do not call Binder methods directly.
+3. The initial implementation uses transaction IDs extracted from the vendor `IBluetooth.Stub`: current phone name (52), call (23), hang up (25), reject (26), answer/listen (27), DTMF (31), microphone mute (32), listener registration (38/39) and Bluetooth power query (70).
+4. Callback descriptors and transaction IDs are extracted from the APK. Call and connection status integers remain raw until validated on a live UJC201; do not infer state names from the integer alone.
+5. Contacts/history integration is not implemented yet; demo contact data remains in the UI until the vendor provider/API format is confirmed.
+6. Use `LibreHU-service` only for optional vehicle state or audio-DSP controls. Never open `/dev/ttyS1` from the dialer; `LibreHU-service` is the single owner of the MCU UART.
+7. A successful Binder transaction confirms command dispatch, not successful call setup or an established call.
 
-**Validation still required:** run the branch on the stock UJC201 and compare callback events with the original Jancar UI. Binder transaction IDs have been extracted, but command semantics, status values and callback timing must be verified on-device.
+**Validation still required:** run the branch on the stock UJC201 and compare callback events with the original Jancar UI. Command semantics, status values and callback timing must be verified on-device.
 
 ## UI target
 
-The current Compose prototype intentionally labels contacts and calls as demo data. It is not yet connected to Contacts Provider, call history or the Bluetooth service. The next implementation milestone is to validate the Binder contract, then replace the demo repository without redesigning the UI.
+The current Compose UI binds to the Jancar service for initial call commands and raw call/connection events. Contacts and call history are still demo data; the next milestone is on-device validation, then replacing the demo repository without redesigning the UI.
 
 The goal is to reproduce Android Auto's familiar phone workflow (favorites, recents, contacts, keypad, and call controls) with LibreHU branding and large landscape touch targets. This is a native head-unit UI, not an Android Auto projection app and not an implementation of Google's Android for Cars App Library.

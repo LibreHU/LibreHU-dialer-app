@@ -38,11 +38,11 @@ Do not assume that Android's public `BluetoothHeadset` APIs control a Bluetooth 
 
 ## Next milestones
 
-1. Build and run the UI on an emulator and the UJC201.
-2. Inspect the original Bluetooth service and document the real HFP control path.
-3. Replace demo contacts with Contacts Provider data after runtime permission handling.
-4. Add actual call history only if the platform exposes it.
-5. Implement incoming/outgoing/active call state and audio routing against the confirmed Bluetooth/Telecom interface.
+1. Validate service binding and command behavior on the stock UJC201.
+2. Map the live `IBluetoothCallback` call/connection status values against the original Jancar UI.
+3. Verify outgoing, answer, reject, hang-up and microphone-mute commands with a paired phone.
+4. Replace demo contacts with the Jancar phonebook API/provider after confirming its data format and access rules.
+5. Add real call history and recovery after service disconnects.
 6. Add regression tests for disconnects, missed calls, rotation and display sizes.
 
 ## Build
