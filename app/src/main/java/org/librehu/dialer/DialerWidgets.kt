@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
+import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.provider.CallLog
@@ -41,12 +42,12 @@ class DialerRecentCallsWidget : AppWidgetProvider() {
         ids.forEach { updateOne(context, manager, it) }
     }
 
-    override fun onReceive(context: Context, intent: Intent) {
-        super.onReceive(context, intent)
-        if (intent.action == AppWidgetManager.ACTION_APPWIDGET_UPDATE) {
+    companion object {
+        fun refresh(context: Context) {
             val manager = AppWidgetManager.getInstance(context)
-            val ids = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS) ?: return
-            ids.forEach { updateOne(context, manager, it) }
+            val ids = manager.getAppWidgetIds(ComponentName(context, DialerRecentCallsWidget::class.java))
+            val provider = DialerRecentCallsWidget()
+            ids.forEach { provider.updateOne(context, manager, it) }
         }
     }
 
