@@ -226,8 +226,8 @@ internal class JancarBluetoothClient(context: Context) {
 
     fun transferCall(): Boolean = runCommand("Audio transfer request sent", TRANSACTION_TRANSFER_CALL)
 
-    fun sendDtmf(digit: Int): Boolean = runCommand("DTMF request sent", TRANSACTION_REQUEST_DTMF) {
-        writeInt(digit)
+    fun sendDtmf(digit: Char): Boolean = runCommand("DTMF request sent", TRANSACTION_REQUEST_DTMF) {
+        writeInt(digit.code)
         writeStrongBinder(execCallback)
     }
 
