@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <queries>
         <provider android:authorities="org.librehu.launcher.theme" />
+        <package android:name="com.jancar.btservice" />
     </queries>
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
