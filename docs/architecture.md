@@ -53,7 +53,7 @@ The HFP path involves Android's Bluetooth Headset Client / Telecom components, i
 5. Never open `/dev/ttyS1` from the dialer. `LibreHU-service` is the single owner of the MCU UART; competing readers steal frames.
 6. Display disconnected / unsupported states honestly. Never simulate a real active call after a Binder failure.
 
-**Important:** exact `IBluetooth` AIDL signatures and callback registration must be confirmed from the APK/decompiled source before implementing method calls. Method names alone are not enough to safely reconstruct Binder transaction codes.
+**Validation still required:** run the branch on the stock UJC201 and compare callback events with the original Jancar UI. Binder transaction IDs have been extracted, but command semantics, status values and callback timing must be verified on-device.
 
 ## UI target
 
