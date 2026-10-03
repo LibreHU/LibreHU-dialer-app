@@ -1,7 +1,14 @@
 package org.librehu.dialer
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.provider.CallLog
+import android.provider.ContactsContract
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +33,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import androidx.core.content.ContextCompat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -121,6 +132,54 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
     var overlayVisible by remember { mutableStateOf(false) }
     var showDtmf by remember { mutableStateOf(false) }
     val btState by btClient.state.collectAsState()
+    val context = LocalContext.current
+    var dataRefresh by remember { mutableIntStateOf(0) }
+    var deviceContacts by remember { mutableStateOf<List<Person>>(emptyList()) }
+    var deviceRecents by remember { mutableStateOf<List<Person>>(emptyList()) }
+    var dataMessage by remember { mutableStateOf("Allow Android permissions to read device data") }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { results ->
+        dataMessage = if (results.values.all { it }) "Device data access enabled" else "Permission denied. Enable access in Android app settings."
+        dataRefresh++
+    }
+    val openTab: (Tab) -> Unit = { item ->
+        tab = item
+        val needed = when (item) {
+            Tab.Contacts -> arrayOf(Manifest.permission.READ_CONTACTS)
+            Tab.Recents -> arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
+            else -> emptyArray()
+        }
+        if (needed.isNotEmpty()) {
+            val missing = needed.filter { ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
+            if (missing.isNotEmpty()) permissionLauncher.launch(missing.toTypedArray()) else dataRefresh++
+        }
+    }
+    LaunchedEffect(tab, dataRefresh) {
+        when (tab) {
+            Tab.Contacts -> {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                    deviceContacts = withContext(Dispatchers.IO) { readDeviceContacts(context) }
+                    dataMessage = if (deviceContacts.isEmpty()) "No contacts found on this device" else deviceContacts.size.toString() + " phone entries"
+                } else {
+                    deviceContacts = emptyList()
+                    dataMessage = "Contacts permission required"
+                }
+            }
+            Tab.Recents -> {
+                val contactsAllowed = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
+                val logsAllowed = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
+                if (contactsAllowed && logsAllowed) {
+                    deviceRecents = withContext(Dispatchers.IO) { readDeviceCallLog(context) }
+                    dataMessage = if (deviceRecents.isEmpty()) "No calls found in the device call log" else deviceRecents.size.toString() + " recent calls"
+                } else {
+                    deviceRecents = emptyList()
+                    dataMessage = "Contacts and call-log permissions required"
+                }
+            }
+            else -> Unit
+        }
+    }
     val requestCall: (Person) -> Unit = { person ->
         selected = person
         number = person.number
@@ -156,7 +215,7 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
                         val active = item == tab
                         Column(Modifier.fillMaxWidth().padding(horizontal = 7.dp).clip(RoundedCornerShape(16.dp))
                             .background(if (active) DialerColors.Raised else Color.Transparent)
-                            .clickable { tab = item }.padding(vertical = 13.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            .clickable { openTab(item) }.padding(vertical = 13.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(when (item) {
                                 Tab.Favorites -> Icons.Default.Star
                                 Tab.Recents -> Icons.Default.History
@@ -216,7 +275,7 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
                                 }
                             }
                         }
-                        Tab.Recents -> ContactList("Recent calls", "Incoming, outgoing and missed", demo,
+                        Tab.Recents -> ContactList("Recent calls", dataMessage, deviceRecents,
                             { selected = it; number = it.number }, { requestCall(it) })
                         Tab.Contacts -> {
                             Heading("Contacts", "Find someone to call")
@@ -230,7 +289,7 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
                                     })
                             }
                             Spacer(Modifier.height(10.dp))
-                            ContactList("All contacts", "Demo data", demo.filter { it.name.contains(query, true) || it.number.contains(query) },
+                            ContactList("All contacts", dataMessage, deviceContacts.filter { it.name.contains(query, true) || it.number.contains(query) },
                                 { selected = it; number = it.number }, { requestCall(it) })
                         }
                         Tab.Keypad -> {
@@ -371,6 +430,98 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
     }
 }
 
+
+private fun initialsFor(name: String): String =
+    name.trim().split(Regex("\\s+")).filter { it.isNotBlank() }.take(2)
+        .mapNotNull { it.firstOrNull()?.uppercaseChar() }.joinToString("").ifBlank { "?" }
+
+private fun readDeviceContacts(context: Context): List<Person> {
+    val result = mutableListOf<Person>()
+    val projection = arrayOf(
+        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+        ContactsContract.CommonDataKinds.Phone.NUMBER,
+        ContactsContract.CommonDataKinds.Phone.TYPE
+    )
+    context.contentResolver.query(
+        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+        projection, null, null,
+        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " COLLATE NOCASE ASC"
+    )?.use { cursor ->
+        val nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+        val numberIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)
+        val typeIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.TYPE)
+        while (cursor.moveToNext()) {
+            val name = cursor.getString(nameIndex)?.trim().orEmpty().ifBlank { "Unknown contact" }
+            val number = cursor.getString(numberIndex)?.trim().orEmpty()
+            if (number.isNotBlank()) {
+                val type = ContactsContract.CommonDataKinds.Phone.getTypeLabel(
+                    context.resources, cursor.getInt(typeIndex), null
+                ).toString()
+                result += Person(name, number, initialsFor(name), type)
+            }
+        }
+    }
+    return result
+}
+
+private fun readDeviceCallLog(context: Context): List<Person> {
+    val contactNames = mutableMapOf<String, String>()
+    runCatching {
+        context.contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER),
+            null, null, null
+        )?.use { cursor ->
+            val nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+            val numberIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)
+            while (cursor.moveToNext()) {
+                val name = cursor.getString(nameIndex)?.trim().orEmpty()
+                val number = cursor.getString(numberIndex)?.filter { it.isDigit() || it == '+' }.orEmpty()
+                if (name.isNotBlank() && number.isNotBlank()) contactNames[number] = name
+            }
+        }
+    }
+    val result = mutableListOf<Person>()
+    val projection = arrayOf(
+        CallLog.Calls.NUMBER, CallLog.Calls.CACHED_NAME, CallLog.Calls.TYPE,
+        CallLog.Calls.DATE, CallLog.Calls.DURATION
+    )
+    context.contentResolver.query(
+        CallLog.Calls.CONTENT_URI, projection, null, null, CallLog.Calls.DATE + " DESC"
+    )?.use { cursor ->
+        val numberIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.NUMBER)
+        val nameIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.CACHED_NAME)
+        val typeIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.TYPE)
+        val dateIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.DATE)
+        val durationIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.DURATION)
+        val dateFormat = SimpleDateFormat("dd MMM · HH:mm", Locale.getDefault())
+        while (cursor.moveToNext()) {
+            val number = cursor.getString(numberIndex)?.trim().orEmpty().ifBlank { "Unknown number" }
+            val cachedName = cursor.getString(nameIndex)?.trim().orEmpty()
+            val normalized = number.filter { it.isDigit() || it == '+' }
+            val name = cachedName.ifBlank { contactNames[normalized] ?: number }
+            val type = when (cursor.getInt(typeIndex)) {
+                CallLog.Calls.INCOMING_TYPE -> "Incoming"
+                CallLog.Calls.OUTGOING_TYPE -> "Outgoing"
+                CallLog.Calls.MISSED_TYPE -> "Missed"
+                CallLog.Calls.REJECTED_TYPE -> "Rejected"
+                CallLog.Calls.BLOCKED_TYPE -> "Blocked"
+                CallLog.Calls.VOICEMAIL_TYPE -> "Voicemail"
+                else -> "Call"
+            }
+            val date = dateFormat.format(Date(cursor.getLong(dateIndex)))
+            val seconds = cursor.getLong(durationIndex)
+            val duration = if (seconds >= 3600) {
+                String.format(Locale.getDefault(), "%d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60)
+            } else {
+                String.format(Locale.getDefault(), "%d:%02d", seconds / 60, seconds % 60)
+            }
+            result += Person(name, number, initialsFor(name), "$type · $date · $duration")
+        }
+    }
+    return result
+}
+
 @Composable private fun Heading(title: String, subtitle: String) {
     Column(Modifier.padding(start = 4.dp, bottom = 10.dp, top = 2.dp)) {
         Text(title, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
@@ -398,6 +549,12 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
 @Composable private fun ContactList(title: String, subtitle: String, people: List<Person>, onSelect: (Person) -> Unit, onCall: (Person) -> Unit) {
     Heading(title, subtitle)
     LazyColumn(Modifier.fillMaxSize().clip(RoundedCornerShape(22.dp)).background(DialerColors.Card), contentPadding = PaddingValues(8.dp)) {
+        if (people.isEmpty()) {
+            item {
+                Text("No entries to display", color = DialerColors.Muted, fontSize = 14.sp,
+                    modifier = Modifier.fillMaxWidth().padding(24.dp))
+            }
+        }
         items(people) { person -> PersonRow(person, { onSelect(person) }, { onCall(person) }) }
     }
 }
