@@ -1,4 +1,5 @@
 name: Build
+
 on:
   push:
     branches: [main]
@@ -6,12 +7,19 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Avoid multiple Gradle builds exhausting runner memory when several commits
+# are pushed in quick succession.
+concurrency:
+  group: android-build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
   android:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,7 +32,7 @@ jobs:
         with:
           gradle-version: "9.7.1"
       - name: Build debug APK
-        run: gradle assembleDebug
+        run: gradle --no-daemon --stacktrace assembleDebug
       - uses: actions/upload-artifact@v4
         with:
           name: LibreHU-Dialer-debug
