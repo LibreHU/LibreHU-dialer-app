@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -63,7 +64,7 @@ private object DialerColors {
     val Muted get() = palette.textDim
 }
 
-private enum class Tab(val title: String) { Favorites("Favorites"), Recents("Recents"), Contacts("Contacts"), Keypad("Keypad") }
+private enum class Tab(val title: String) { Favorites("Favorites"), Recents("Recents"), Contacts("Contacts"), Keypad("Keypad"), Settings("Settings") }
 private enum class CallState { None, Calling, Connected }
 private data class Person(val name: String, val number: String, val initials: String, val detail: String)
 
@@ -140,6 +141,7 @@ private fun DialerApp() {
                                 Tab.Recents -> Icons.Default.History
                                 Tab.Contacts -> Icons.Default.Contacts
                                 Tab.Keypad -> Icons.Default.Dialpad
+                                Tab.Settings -> Icons.Default.Settings
                             }, item.title, tint = if (active) DialerColors.Accent else DialerColors.Muted, modifier = Modifier.size(23.dp))
                             Spacer(Modifier.height(5.dp))
                             Text(item.title, color = if (active) DialerColors.Text else DialerColors.Muted, fontSize = 10.sp)
@@ -223,7 +225,15 @@ private fun DialerApp() {
                                 Column(Modifier.weight(0.9f)) {
                                     Heading("Keypad", "Enter a phone number")
                                     Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(DialerColors.Card).padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                        Text(number.ifBlank { "Enter number" }, color = if (number.isBlank()) DialerColors.Muted else DialerColors.Text, fontSize = 19.sp, modifier = Modifier.weight(1f), maxLines = 1)
+                                        Text(
+                                            number.ifBlank { "Enter number" },
+                                            color = if (number.isBlank()) DialerColors.Muted else DialerColors.Text,
+                                            fontSize = 19.sp,
+                                            modifier = Modifier.weight(1f).pointerInput(Unit) {
+                                                detectTapGestures(onLongPress = { number = "" })
+                                            },
+                                            maxLines = 1
+                                        )
                                         IconButton(onClick = { if (number.isNotEmpty()) number = number.dropLast(1) }) { Icon(Icons.AutoMirrored.Filled.Backspace, "Delete", tint = DialerColors.Muted) }
                                     }
                                     Spacer(Modifier.height(10.dp))
@@ -250,9 +260,10 @@ private fun DialerApp() {
                                 }
                             }
                         }
+                        Tab.Settings -> SettingsScreen(context)
                     }
                     if (call == CallState.None) {
-                        Spacer(Modifier.height(5.dp)); Text("PREVIEW MODE · DEMO CONTACTS · NO REAL CALLS", color = DialerColors.Muted, fontSize = 10.sp, letterSpacing = 1.1.sp)
+                        Spacer(Modifier.height(5.dp)); Text("PREVIEW MODE · DEVICE CONTACTS · NO REAL CALLS", color = DialerColors.Muted, fontSize = 10.sp, letterSpacing = 1.1.sp)
                     }
                 }
             }
