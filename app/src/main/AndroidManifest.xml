@@ -21,6 +21,12 @@
             </intent-filter>
         </activity>
         <service android:name=".CallOverlayService" android:exported="false" android:foregroundServiceType="connectedDevice" />
+        <receiver android:name=".DialerWidgetThemeReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="org.librehu.action.THEME_CHANGED" />
+                <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".DialerShortcutsWidget" android:exported="true" android:label="Dialer shortcuts" android:permission="android.permission.BIND_APPWIDGET">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_dialer_shortcuts_info" />
