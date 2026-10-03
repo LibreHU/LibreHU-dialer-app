@@ -134,6 +134,16 @@ private fun DialerApp(initialTab: String? = null) {
             deviceRecents = withContext(Dispatchers.IO) { readDeviceCallLog(context) }
         }
     }
+    val openTab: (Tab) -> Unit = { item ->
+        tab = item
+        val needed = when (item) {
+            Tab.Contacts -> arrayOf(Manifest.permission.READ_CONTACTS)
+            Tab.Recents, Tab.Favorites -> arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
+            Tab.Keypad, Tab.Settings -> emptyArray()
+        }
+        val missing = needed.filter { ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
+        if (missing.isNotEmpty()) permissionLauncher.launch(missing.toTypedArray()) else dataRefresh++
+    }
     val p = DialerColors.palette
     val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
     val scheme = if (p.dark) {
@@ -158,7 +168,7 @@ private fun DialerApp(initialTab: String? = null) {
                         val active = item == tab
                         Column(Modifier.fillMaxWidth().padding(horizontal = 7.dp).clip(RoundedCornerShape(16.dp))
                             .background(if (active) DialerColors.Raised else Color.Transparent)
-                            .clickable { tab = item }.padding(vertical = 13.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            .clickable { openTab(item) }.padding(vertical = 13.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(when (item) {
                                 Tab.Favorites -> Icons.Default.Star
                                 Tab.Recents -> Icons.Default.History
