@@ -336,7 +336,15 @@ private fun DialerApp(btClient: JancarBluetoothClient, initialTab: String? = nul
                                 Column(Modifier.weight(0.9f)) {
                                     Heading("Keypad", "Enter a phone number")
                                     Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(DialerColors.Card).padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                        Text(number.ifBlank { "Enter number" }, color = if (number.isBlank()) DialerColors.Muted else DialerColors.Text, fontSize = 19.sp, modifier = Modifier.weight(1f), maxLines = 1)
+                                        Text(
+    number.ifBlank { "Enter number" },
+    color = if (number.isBlank()) DialerColors.Muted else DialerColors.Text,
+    fontSize = 19.sp,
+    modifier = Modifier.weight(1f).pointerInput(Unit) {
+        detectTapGestures(onLongPress = { number = "" })
+    },
+    maxLines = 1
+)
                                         IconButton(onClick = { if (number.isNotEmpty()) number = number.dropLast(1) }) { Icon(Icons.Default.Backspace, "Delete", tint = DialerColors.Muted) }
                                     }
                                     Spacer(Modifier.height(10.dp))
