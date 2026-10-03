@@ -69,7 +69,7 @@ private data class DialerPalette(
 }
 
 /** Same palette contract as LibreHU Launcher: effective night mode + launcher-selected accent. */
-private object DialerColors {
+internal object DialerColors {
     var palette by mutableStateOf(DialerPalette.fromLauncher(true, 0))
     val Bg get() = palette.background
     val Card get() = palette.surface
@@ -110,6 +110,8 @@ class MainActivity : ComponentActivity() {
         themeFollower.start()
         btClient.bind()
     }
+
+    internal fun refreshTheme() = themeFollower.refreshNow()
 
     override fun onStop() {
         btClient.unbind()
@@ -484,7 +486,7 @@ private fun readDeviceCallLog(context: Context): List<Person> {
     return result
 }
 
-@Composable private fun Heading(title: String, subtitle: String) {
+@Composable internal fun Heading(title: String, subtitle: String) {
     Column(Modifier.padding(start = 4.dp, bottom = 10.dp, top = 2.dp)) {
         Text(title, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
         Text(subtitle, fontSize = 12.sp, color = DialerColors.Muted)
