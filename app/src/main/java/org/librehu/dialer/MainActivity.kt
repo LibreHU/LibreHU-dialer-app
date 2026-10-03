@@ -271,6 +271,12 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
                             }
                         }
                     }
+                    if (!btState.lastError.isNullOrBlank()) {
+                        Text(btState.lastError!!, color = Color(0xFFB3261E), fontSize = 11.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    }
+                    if (!btState.lastCommandResult.isNullOrBlank() && call == CallState.None) {
+                        Text(btState.lastCommandResult!!, color = DialerColors.Muted, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
                     if (call == CallState.None) {
                         Spacer(Modifier.height(5.dp)); Text("JANCAR BT SERVICE · DEMO CONTACTS", color = DialerColors.Muted, fontSize = 10.sp, letterSpacing = 1.1.sp)
                     }
