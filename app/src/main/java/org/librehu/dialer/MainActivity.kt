@@ -252,6 +252,7 @@ private fun DialerApp(btClient: JancarBluetoothClient, initialTab: String? = nul
                                 Tab.Recents -> Icons.Default.History
                                 Tab.Contacts -> Icons.Default.Contacts
                                 Tab.Keypad -> Icons.Default.Dialpad
+                                Tab.Settings -> Icons.Default.Settings
                             }, item.title, tint = if (active) DialerColors.Accent else DialerColors.Muted, modifier = Modifier.size(23.dp))
                             Spacer(Modifier.height(5.dp))
                             Text(item.title, color = if (active) DialerColors.Text else DialerColors.Muted, fontSize = 10.sp)
