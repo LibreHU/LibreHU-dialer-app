@@ -143,7 +143,7 @@ private fun DialerApp(btClient: JancarBluetoothClient, initialTab: String? = nul
             val needed = when (tab) {
                 Tab.Contacts -> arrayOf(Manifest.permission.READ_CONTACTS)
                 Tab.Recents, Tab.Favorites -> arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
-                Tab.Keypad -> emptyArray()
+                Tab.Keypad, Tab.Settings -> emptyArray()
             }
             val missing = needed.filter { ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
             if (missing.isNotEmpty()) permissionLauncher.launch(missing.toTypedArray())
