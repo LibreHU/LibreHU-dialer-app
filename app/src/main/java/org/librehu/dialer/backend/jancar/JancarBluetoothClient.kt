@@ -82,6 +82,31 @@ internal class JancarBluetoothClient(context: Context) {
         }
     }
 
+    private val currentNameCallback = object : Binder() {
+        init { attachInterface(this, EXEC_CALLBACK_DESCRIPTOR) }
+
+        override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
+            if (code == INTERFACE_TRANSACTION) {
+                reply?.writeString(EXEC_CALLBACK_DESCRIPTOR)
+                return true
+            }
+            data.enforceInterface(EXEC_CALLBACK_DESCRIPTOR)
+            when (code) {
+                1 -> {
+                    val name = data.readString().orEmpty()
+                    _state.value = _state.value.copy(currentPhoneName = name.ifBlank { null })
+                }
+                2 -> {
+                    val errorCode = data.readInt()
+                    _state.value = _state.value.copy(lastError = "Could not read current phone name ($errorCode)")
+                }
+                else -> return super.onTransact(code, data, reply, flags)
+            }
+            if (reply != null) reply.writeNoException()
+            return true
+        }
+    }
+
     private val execCallback = object : Binder() {
         init { attachInterface(this, EXEC_CALLBACK_DESCRIPTOR) }
 
@@ -116,7 +141,7 @@ internal class JancarBluetoothClient(context: Context) {
                 _state.value = _state.value.copy(bluetoothPowered = callBoolean(TRANSACTION_IS_POWER_ON))
                 transactVoid(TRANSACTION_REQUEST_LISTENER) { writeStrongBinder(callback) }
                 listenerRegistered = true
-                transactVoid(TRANSACTION_GET_CURRENT_DEVICE_NAME) { writeStrongBinder(execCallback) }
+                transactVoid(TRANSACTION_GET_CURRENT_DEVICE_NAME) { writeStrongBinder(currentNameCallback) }
             }.onFailure {
                 _state.value = _state.value.copy(lastError = "Binder initialization failed: ${it.message}")
             }
@@ -175,6 +200,10 @@ internal class JancarBluetoothClient(context: Context) {
     fun hangPhone(): Boolean = runCommand("Hang-up request sent", TRANSACTION_HANG_PHONE)
     fun answerPhone(): Boolean = runCommand("Answer request sent", TRANSACTION_LISTEN_PHONE)
     fun rejectPhone(): Boolean = runCommand("Reject request sent", TRANSACTION_REJECT_PHONE)
+    fun muteMic(muted: Boolean): Boolean = runCommand("Microphone mute request sent", TRANSACTION_MUTE_MIC) {
+        writeInt(if (muted) 1 else 0)
+        writeStrongBinder(execCallback)
+    }
 
     fun sendDtmf(digit: Int): Boolean = runCommand("DTMF request sent", TRANSACTION_REQUEST_DTMF) {
         writeInt(digit)
@@ -245,6 +274,7 @@ internal class JancarBluetoothClient(context: Context) {
         private const val TRANSACTION_REJECT_PHONE = 26
         private const val TRANSACTION_LISTEN_PHONE = 27
         private const val TRANSACTION_REQUEST_DTMF = 31
+        private const val TRANSACTION_MUTE_MIC = 32
         private const val TRANSACTION_REQUEST_LISTENER = 38
         private const val TRANSACTION_UNREQUEST_LISTENER = 39
         private const val TRANSACTION_IS_POWER_ON = 70
@@ -255,6 +285,7 @@ internal data class JancarState(
     val serviceAvailable: Boolean = false,
     val serviceMessage: String = "Jancar Bluetooth service not connected",
     val bluetoothPowered: Boolean? = null,
+    val currentPhoneName: String? = null,
     val connectionEvent: String? = null,
     val connectionDetails: String? = null,
     val callEvent: String? = null,
