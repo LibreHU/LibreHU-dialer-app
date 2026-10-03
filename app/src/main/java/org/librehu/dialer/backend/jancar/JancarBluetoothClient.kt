@@ -154,7 +154,12 @@ internal class JancarBluetoothClient(context: Context) {
             _state.value = _state.value.copy(
                 serviceAvailable = false,
                 serviceMessage = "Jancar Bluetooth service disconnected",
-                bluetoothPowered = null
+                bluetoothPowered = null,
+                currentPhoneName = null,
+                connectionEvent = null,
+                connectionDetails = null,
+                callEvent = null,
+                callDetails = null
             )
         }
 
@@ -190,7 +195,14 @@ internal class JancarBluetoothClient(context: Context) {
         runCatching { appContext.unbindService(connection) }
         bound = false
         service = null
-        _state.value = _state.value.copy(serviceAvailable = false, serviceMessage = "Jancar service disconnected")
+        _state.value = _state.value.copy(
+            serviceAvailable = false,
+            serviceMessage = "Jancar service disconnected",
+            bluetoothPowered = null,
+            currentPhoneName = null,
+            connectionEvent = null,
+            connectionDetails = null
+        )
     }
 
     fun callPhone(number: String): Boolean {
