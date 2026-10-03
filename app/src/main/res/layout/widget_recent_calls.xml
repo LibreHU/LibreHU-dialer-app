@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_recent_root"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="10dp"
+    android:background="@drawable/widget_bg_dark">
+
+    <LinearLayout
+        android:id="@+id/widget_recent_card"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:padding="12dp" android:background="@drawable/widget_card_dark">
+
+        <View android:id="@+id/widget_recent_accent_bar"
+            android:layout_width="5dp" android:layout_height="42dp"
+            android:layout_marginEnd="12dp" android:background="#8AB4F8" />
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/widget_recent_title"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Recent calls" android:textColor="#E8EAED"
+                android:textSize="17sp" android:textStyle="bold" />
+            <TextView android:id="@+id/widget_recent_summary"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Latest calls" android:textColor="#9AA0A6"
+                android:textSize="11sp" android:layout_marginTop="2dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Space android:layout_width="match_parent" android:layout_height="8dp" />
+
+    <TextView android:id="@+id/widget_recent_line1"
+        android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:gravity="center_vertical" android:padding="11dp"
+        android:textColor="#E8EAED" android:textSize="12sp"
+        android:maxLines="1" android:ellipsize="end"
+        android:background="@drawable/widget_chip_dark" />
+
+    <Space android:layout_width="match_parent" android:layout_height="5dp" />
+
+    <TextView android:id="@+id/widget_recent_line2"
+        android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:gravity="center_vertical" android:padding="11dp"
+        android:textColor="#E8EAED" android:textSize="12sp"
+        android:maxLines="1" android:ellipsize="end"
+        android:background="@drawable/widget_chip_dark" />
+
+    <Space android:layout_width="match_parent" android:layout_height="5dp" />
+
+    <TextView android:id="@+id/widget_recent_line3"
+        android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:gravity="center_vertical" android:padding="11dp"
+        android:textColor="#E8EAED" android:textSize="12sp"
+        android:maxLines="1" android:ellipsize="end"
+        android:background="@drawable/widget_chip_dark" />
+
+    <Space android:layout_width="match_parent" android:layout_height="7dp" />
+
+    <TextView android:id="@+id/widget_recent_open"
+        android:layout_width="match_parent" android:layout_height="42dp"
+        android:gravity="center" android:text="Open call history"
+        android:textColor="#E8EAED" android:textStyle="bold" android:textSize="12sp"
+        android:background="@drawable/widget_chip_dark" />
+</LinearLayout>
