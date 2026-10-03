@@ -81,14 +81,6 @@ private enum class Tab(val title: String) { Favorites("Favorites"), Recents("Rec
 private enum class CallState { None, Calling, Connected }
 private data class Person(val name: String, val number: String, val initials: String, val detail: String)
 
-private val demo = listOf(
-    Person("Alex Morgan", "+33 6 12 34 56 78", "AM", "Mobile · 10:42"),
-    Person("Camille Bernard", "+33 6 23 45 67 89", "CB", "Mobile · Yesterday"),
-    Person("Sam Martin", "+33 7 34 56 78 90", "SM", "Mobile · Monday"),
-    Person("Garage", "+33 4 90 00 12 34", "G", "Work · 12 Sep"),
-    Person("Jordan Lee", "+33 6 45 67 89 01", "JL", "Mobile · 9 Sep")
-)
-
 class MainActivity : ComponentActivity() {
     private lateinit var themeFollower: ThemeFollower
     private lateinit var btClient: JancarBluetoothClient
@@ -147,7 +139,7 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
         tab = item
         val needed = when (item) {
             Tab.Contacts -> arrayOf(Manifest.permission.READ_CONTACTS)
-            Tab.Recents -> arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
+            Tab.Recents, Tab.Favorites -> arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
             else -> emptyArray()
         }
         if (needed.isNotEmpty()) {
@@ -157,13 +149,16 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
     }
     LaunchedEffect(tab, dataRefresh) {
         when (tab) {
-            Tab.Contacts -> {
+            Tab.Contacts, Tab.Favorites -> {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
                     deviceContacts = withContext(Dispatchers.IO) { readDeviceContacts(context) }
                     dataMessage = if (deviceContacts.isEmpty()) "No contacts found on this device" else deviceContacts.size.toString() + " phone entries"
                 } else {
                     deviceContacts = emptyList()
                     dataMessage = "Contacts permission required"
+                }
+                if (tab == Tab.Favorites && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED) {
+                    deviceRecents = withContext(Dispatchers.IO) { readDeviceCallLog(context) }
                 }
             }
             Tab.Recents -> {
@@ -252,25 +247,33 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
                     Spacer(Modifier.height(12.dp))
                     when (tab) {
                         Tab.Favorites -> {
-                            Heading("Favorites", "Your people, one tap away")
-                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                demo.take(4).forEach { person ->
-                                    Column(Modifier.weight(1f).clip(RoundedCornerShape(22.dp)).background(DialerColors.Card)
-                                        .clickable { selected = person; number = person.number }.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Avatar(person, 58); Spacer(Modifier.height(10.dp))
-                                        Text(person.name, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                        Text("Mobile", fontSize = 11.sp, color = DialerColors.Muted)
-                                        Spacer(Modifier.height(8.dp))
-                                        FilledTonalButton(onClick = { requestCall(person) },
-                                            colors = ButtonDefaults.filledTonalButtonColors(containerColor = DialerColors.Raised, contentColor = DialerColors.Accent)) {
-                                            Icon(Icons.Default.Call, null); Spacer(Modifier.width(4.dp)); Text("Call")
+                            Heading("Quick contacts", if (deviceContacts.isEmpty()) dataMessage else "Contacts from this device")
+                            if (deviceContacts.isEmpty()) {
+                                Text("Open Contacts and grant permission to see people here.", color = DialerColors.Muted,
+                                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(DialerColors.Card).padding(18.dp))
+                            } else {
+                                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    deviceContacts.take(4).forEach { person ->
+                                        Column(Modifier.weight(1f).clip(RoundedCornerShape(22.dp)).background(DialerColors.Card)
+                                            .clickable { selected = person; number = person.number }.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                                            Avatar(person, 58); Spacer(Modifier.height(10.dp))
+                                            Text(person.name, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                            Text(person.detail, fontSize = 11.sp, color = DialerColors.Muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                            Spacer(Modifier.height(8.dp))
+                                            FilledTonalButton(onClick = { requestCall(person) },
+                                                colors = ButtonDefaults.filledTonalButtonColors(containerColor = DialerColors.Raised, contentColor = DialerColors.Accent)) {
+                                                Icon(Icons.Default.Call, null); Spacer(Modifier.width(4.dp)); Text("Call")
+                                            }
                                         }
                                     }
                                 }
                             }
-                            Spacer(Modifier.height(14.dp)); Heading("Recent calls", "Your latest conversations")
+                            Spacer(Modifier.height(14.dp)); Heading("Recent calls", if (deviceRecents.isEmpty()) "No call history available" else "Latest calls from this device")
                             LazyColumn(Modifier.fillMaxSize().clip(RoundedCornerShape(22.dp)).background(DialerColors.Card), contentPadding = PaddingValues(8.dp)) {
-                                items(demo.take(3)) { person ->
+                                if (deviceRecents.isEmpty()) {
+                                    item { Text("Call history appears here after granting permission.", color = DialerColors.Muted, modifier = Modifier.padding(18.dp)) }
+                                }
+                                items(deviceRecents.take(5)) { person ->
                                     PersonRow(person, { selected = person; number = person.number }, { requestCall(person) })
                                 }
                             }
