@@ -24,7 +24,6 @@
         <receiver android:name=".DialerWidgetThemeReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="org.librehu.action.THEME_CHANGED" />
-                <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
             </intent-filter>
         </receiver>
         <receiver android:name=".DialerShortcutsWidget" android:exported="true" android:label="Dialer shortcuts" android:permission="android.permission.BIND_APPWIDGET">
