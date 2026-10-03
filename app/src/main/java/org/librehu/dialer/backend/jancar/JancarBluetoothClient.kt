@@ -38,16 +38,22 @@ internal class JancarBluetoothClient(context: Context) {
             }
             data.enforceInterface(CALLBACK_DESCRIPTOR)
             when (code) {
+                // IBluetoothCallback AIDL declaration order in the stock Jancar APK.
                 1 -> {
                     val status = data.readInt()
-                    val first = data.readString().orEmpty()
-                    val second = data.readString().orEmpty()
-                    _state.value = _state.value.copy(
-                        connectionEvent = "Jancar connection event $status",
-                        connectionDetails = listOf(first, second).filter { it.isNotBlank() }.joinToString(" · ")
-                    )
+                    val connected = data.readInt() != 0
+                    _state.value = _state.value.copy(a2dpEvent = "A2DP event $status · connected=$connected")
                 }
-                2 -> {
+                2 -> data.readInt() // Battery event
+                3 -> {
+                    val artist = data.readString().orEmpty()
+                    val title = data.readString().orEmpty()
+                    val album = data.readString().orEmpty()
+                    data.readLong()
+                    _state.value = _state.value.copy(musicInfo = listOf(title, artist, album).filter { it.isNotBlank() }.joinToString(" — "))
+                }
+                4 -> data.readInt() // Signal event
+                5 -> {
                     val status = data.readInt()
                     val first = data.readString().orEmpty()
                     val second = data.readString().orEmpty()
@@ -56,25 +62,20 @@ internal class JancarBluetoothClient(context: Context) {
                         callDetails = listOf(first, second).filter { it.isNotBlank() }.joinToString(" · ")
                     )
                 }
-                3 -> data.readInt() // Voice routing event; mapping not confirmed yet.
-                4 -> {
+                6 -> {
                     val status = data.readInt()
-                    val connected = data.readInt() != 0
-                    _state.value = _state.value.copy(a2dpEvent = "A2DP event $status · connected=$connected")
+                    val first = data.readString().orEmpty()
+                    val second = data.readString().orEmpty()
+                    _state.value = _state.value.copy(
+                        connectionEvent = "Jancar connection event $status",
+                        connectionDetails = listOf(first, second).filter { it.isNotBlank() }.joinToString(" · ")
+                    )
                 }
-                5 -> {
-                    val artist = data.readString().orEmpty()
-                    val title = data.readString().orEmpty()
-                    val album = data.readString().orEmpty()
-                    data.readLong()
-                    _state.value = _state.value.copy(musicInfo = listOf(title, artist, album).filter { it.isNotBlank() }.joinToString(" — "))
-                }
-                6 -> data.readInt() // Battery event
-                7 -> data.readInt() // Signal event
-                8 -> {
+                7 -> {
                     val powered = data.readInt() != 0
                     _state.value = _state.value.copy(bluetoothPowered = powered)
                 }
+                8 -> data.readInt() // Voice routing event; mapping not confirmed yet.
                 else -> return super.onTransact(code, data, reply, flags)
             }
             if (reply != null) reply.writeNoException()
