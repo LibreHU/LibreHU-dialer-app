@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
-import android.media.AudioManager
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
@@ -32,7 +31,6 @@ import org.librehu.dialer.backend.jancar.JancarBluetoothClient
 class CallOverlayService : Service() {
     private lateinit var windowManager: WindowManager
     private lateinit var btClient: JancarBluetoothClient
-    private lateinit var audioManager: AudioManager
     private var root: LinearLayout? = null
     private var windowParams: WindowManager.LayoutParams? = null
     private var callName = "Call"
@@ -40,6 +38,7 @@ class CallOverlayService : Service() {
     private var muted = false
     private var keypadVisible = false
     private var carAudioSelected = true
+    private var collapsed = false
     private var statusText: TextView? = null
     private var muteButton: Button? = null
     private var keypadPanel: GridLayout? = null
@@ -57,7 +56,6 @@ class CallOverlayService : Service() {
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-        audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         btClient = JancarBluetoothClient(this)
         btClient.bind()
         createNotificationChannel()
@@ -239,42 +237,22 @@ class CallOverlayService : Service() {
     }
 
     private fun toggleCollapsed(panel: LinearLayout) {
-        val collapsed = keypadPanel?.visibility == View.GONE && panel.childCount == 3
-        if (collapsed) {
-            keypadPanel?.visibility = if (keypadVisible) View.VISIBLE else View.GONE
-            panel.getChildAt(1).visibility = View.VISIBLE
-            panel.getChildAt(2).visibility = View.VISIBLE
-            panel.getChildAt(3).visibility = View.VISIBLE
-            panel.getChildAt(4).visibility = View.VISIBLE
-        } else {
-            keypadPanel?.visibility = View.GONE
-            panel.getChildAt(1).visibility = View.GONE
-            panel.getChildAt(2).visibility = View.GONE
-            panel.getChildAt(3).visibility = View.GONE
-            panel.getChildAt(4).visibility = View.GONE
-        }
+        collapsed = !collapsed
+        panel.getChildAt(1).visibility = if (collapsed) View.GONE else View.VISIBLE
+        panel.getChildAt(2).visibility = if (collapsed) View.GONE else View.VISIBLE
+        keypadPanel?.visibility = if (!collapsed && keypadVisible) View.VISIBLE else View.GONE
     }
 
     private fun selectAudioRoute(useCarAudio: Boolean) {
-        // Legacy SCO routing is available on the UJC201's Android 9 base. This requests
-        // the head unit's Bluetooth communication path or the local device speaker.
-        runCatching {
-            audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
-            if (useCarAudio) {
-                audioManager.isSpeakerphoneOn = false
-                audioManager.startBluetoothSco()
-                audioManager.isBluetoothScoOn = true
-                carAudioSelected = true
-                statusText?.text = "Sortie demandée : autoradio (Bluetooth SCO)"
-            } else {
-                audioManager.stopBluetoothSco()
-                audioManager.isBluetoothScoOn = false
-                audioManager.isSpeakerphoneOn = true
-                carAudioSelected = false
-                statusText?.text = "Sortie demandée : haut-parleur local"
-            }
-        }.onFailure {
-            statusText?.text = "Routage audio indisponible : ${it.message}"
+        if (useCarAudio == carAudioSelected) {
+            statusText?.text = if (useCarAudio) "Sortie sélectionnée : autoradio" else "Sortie sélectionnée : haut-parleur du téléphone"
+            return
+        }
+        if (btClient.transferCall()) {
+            carAudioSelected = useCarAudio
+            statusText?.text = if (useCarAudio) "Transfert audio demandé vers l'autoradio" else "Transfert audio demandé vers le téléphone"
+        } else {
+            statusText?.text = btClient.state.value.lastError ?: "Échec du transfert audio"
         }
     }
 
@@ -309,12 +287,6 @@ class CallOverlayService : Service() {
 
     override fun onDestroy() {
         removeOverlay()
-        runCatching {
-            audioManager.stopBluetoothSco()
-            audioManager.isBluetoothScoOn = false
-            audioManager.isSpeakerphoneOn = false
-            audioManager.mode = AudioManager.MODE_NORMAL
-        }
         btClient.unbind()
         stopForeground(STOP_FOREGROUND_REMOVE)
         super.onDestroy()
