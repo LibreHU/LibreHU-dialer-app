@@ -23,6 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -116,11 +118,16 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
     var selected by remember { mutableStateOf<Person?>(null) }
     var call by remember { mutableStateOf(CallState.None) }
     var muted by remember { mutableStateOf(false) }
+    var overlayVisible by remember { mutableStateOf(false) }
     val btState by btClient.state.collectAsState()
     val requestCall: (Person) -> Unit = { person ->
         selected = person
         number = person.number
-        if (btClient.callPhone(person.number)) call = CallState.Calling
+        if (btClient.callPhone(person.number)) {
+            call = CallState.Calling
+            overlayVisible = true
+            muted = false
+        }
     }
     val p = DialerColors.palette
     val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
@@ -136,6 +143,7 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
 
     MaterialTheme(colorScheme = scheme) {
         Surface(Modifier.fillMaxSize(), color = DialerColors.Bg, contentColor = DialerColors.Text) {
+            Box(Modifier.fillMaxSize()) {
             Row(Modifier.fillMaxSize().padding(14.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 Column(Modifier.width(86.dp).fillMaxHeight().clip(RoundedCornerShape(26.dp)).background(DialerColors.Card).padding(vertical = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Box(Modifier.size(48.dp).clip(CircleShape).background(DialerColors.Accent), contentAlignment = Alignment.Center) {
@@ -181,22 +189,7 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
                         Spacer(Modifier.width(20.dp)); Text(time, fontSize = 22.sp)
                     }
                     Spacer(Modifier.height(12.dp))
-                    if (call != CallState.None) {
-                        Column(Modifier.fillMaxSize().clip(RoundedCornerShape(24.dp)).background(DialerColors.Card).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Spacer(Modifier.height(6.dp)); Avatar(selected ?: Person("New number", number, "?", ""), 78)
-                            Spacer(Modifier.height(12.dp)); Text(selected?.name ?: "New number", fontSize = 26.sp, fontWeight = FontWeight.SemiBold)
-                            Text(selected?.number ?: number, color = DialerColors.Muted)
-                            Spacer(Modifier.height(8.dp)); Text(btState.callEvent ?: "Call command sent · waiting for HFP status", color = DialerColors.Accent)
-                            if (!btState.callDetails.isNullOrBlank()) Text(btState.callDetails!!, color = DialerColors.Muted, fontSize = 12.sp)
-                            Spacer(Modifier.weight(1f))
-                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
-                                CallAction(if (muted) Icons.Default.Mic else Icons.Default.MicOff, if (muted) "Unmute" else "Mute", { val next = !muted; if (btClient.muteMic(next)) muted = next })
-                                CallAction(Icons.Default.Dialpad, "Keypad", { tab = Tab.Keypad; call = CallState.None })
-                                CallAction(Icons.Default.VolumeUp, "Audio", {})
-                                CallAction(Icons.Default.CallEnd, "End", { if (btClient.hangPhone()) call = CallState.None }, isDestructive = true)
-                            }
-                        }
-                    } else when (tab) {
+                    when (tab) {
                         Tab.Favorites -> {
                             Heading("Favorites", "Your people, one tap away")
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -281,6 +274,80 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
                         Spacer(Modifier.height(5.dp)); Text("JANCAR BT SERVICE · DEMO CONTACTS", color = DialerColors.Muted, fontSize = 10.sp, letterSpacing = 1.1.sp)
                     }
                 }
+            }
+            if (call != CallState.None && !overlayVisible) {
+                FilledTonalButton(
+                    onClick = { overlayVisible = true },
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(22.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(containerColor = DialerColors.Accent, contentColor = DialerColors.OnAccent)
+                ) {
+                    Icon(Icons.Default.Call, null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Return to call")
+                }
+            }
+            if (call != CallState.None && overlayVisible) {
+                Dialog(
+                    onDismissRequest = {},
+                    properties = DialogProperties(
+                        usePlatformDefaultWidth = false,
+                        dismissOnBackPress = false,
+                        dismissOnClickOutside = false
+                    )
+                ) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(0.72f).wrapContentHeight(),
+                        shape = RoundedCornerShape(28.dp),
+                        color = DialerColors.Card,
+                        contentColor = DialerColors.Text,
+                        tonalElevation = 12.dp
+                    ) {
+                        Column(Modifier.padding(24.dp)) {
+                            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                Avatar(selected ?: Person("New number", number, "?", ""), 60)
+                                Spacer(Modifier.width(16.dp))
+                                Column(Modifier.weight(1f)) {
+                                    Text(selected?.name ?: "New number", fontSize = 23.sp, fontWeight = FontWeight.SemiBold)
+                                    Text(selected?.number ?: number, color = DialerColors.Muted, fontSize = 14.sp)
+                                    Text(
+                                        btState.callEvent ?: "Outgoing call requested",
+                                        color = DialerColors.Accent,
+                                        fontSize = 13.sp,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    if (!btState.callDetails.isNullOrBlank()) {
+                                        Text(btState.callDetails!!, color = DialerColors.Muted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    }
+                                }
+                                IconButton(onClick = { overlayVisible = false }, modifier = Modifier.size(42.dp)) {
+                                    Icon(Icons.Default.KeyboardArrowDown, "Minimize call overlay")
+                                }
+                            }
+                            Spacer(Modifier.height(22.dp))
+                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
+                                CallAction(
+                                    if (muted) Icons.Default.Mic else Icons.Default.MicOff,
+                                    if (muted) "Unmute" else "Mute",
+                                    { val next = !muted; if (btClient.muteMic(next)) muted = next }
+                                )
+                                CallAction(Icons.Default.Dialpad, "Keypad", { overlayVisible = false; tab = Tab.Keypad })
+                                CallAction(Icons.Default.CallEnd, "End", {
+                                    if (btClient.hangPhone()) {
+                                        call = CallState.None
+                                        overlayVisible = false
+                                        muted = false
+                                    }
+                                }, isDestructive = true)
+                            }
+                            if (!btState.lastError.isNullOrBlank()) {
+                                Spacer(Modifier.height(12.dp))
+                                Text(btState.lastError!!, color = Color(0xFFB3261E), fontSize = 12.sp)
+                            }
+                        }
+                    }
+                }
+            }
             }
         }
     }
