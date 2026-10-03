@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_shortcuts_root"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="10dp"
+    android:background="@drawable/widget_bg_dark">
+
+    <LinearLayout
+        android:id="@+id/widget_shortcuts_card"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:padding="12dp" android:background="@drawable/widget_card_dark">
+
+        <View android:id="@+id/widget_accent_bar"
+            android:layout_width="5dp" android:layout_height="42dp"
+            android:layout_marginEnd="12dp" android:background="#8AB4F8" />
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/widget_title"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="LibreHU Dialer" android:textColor="#E8EAED"
+                android:textSize="17sp" android:textStyle="bold" />
+            <TextView android:id="@+id/widget_subtitle"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Android Auto style · Quick actions"
+                android:textColor="#9AA0A6" android:textSize="11sp"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Space android:layout_width="match_parent" android:layout_height="8dp" />
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="horizontal">
+        <TextView android:id="@+id/widget_open_dialer"
+            android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:gravity="center" android:text="Open" android:textSize="13sp"
+            android:textStyle="bold" android:textColor="#E8EAED"
+            android:padding="10dp" android:layout_marginEnd="4dp"
+            android:background="@drawable/widget_chip_dark" />
+        <TextView android:id="@+id/widget_contacts"
+            android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:gravity="center" android:text="Contacts" android:textSize="13sp"
+            android:textStyle="bold" android:textColor="#E8EAED"
+            android:padding="10dp" android:layout_marginStart="4dp"
+            android:background="@drawable/widget_chip_dark" />
+    </LinearLayout>
+
+    <Space android:layout_width="match_parent" android:layout_height="8dp" />
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="horizontal">
+        <TextView android:id="@+id/widget_recents"
+            android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:gravity="center" android:text="Recent calls" android:textSize="13sp"
+            android:textStyle="bold" android:textColor="#E8EAED"
+            android:padding="10dp" android:layout_marginEnd="4dp"
+            android:background="@drawable/widget_chip_dark" />
+        <TextView android:id="@+id/widget_keypad"
+            android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:gravity="center" android:text="Keypad" android:textSize="13sp"
+            android:textStyle="bold" android:textColor="#E8EAED"
+            android:padding="10dp" android:layout_marginStart="4dp"
+            android:background="@drawable/widget_chip_dark" />
+    </LinearLayout>
+</LinearLayout>
