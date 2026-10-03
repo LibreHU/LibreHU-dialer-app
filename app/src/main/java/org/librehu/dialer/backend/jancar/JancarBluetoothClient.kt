@@ -192,10 +192,13 @@ internal class JancarBluetoothClient(context: Context) {
         _state.value = _state.value.copy(serviceAvailable = false, serviceMessage = "Jancar service disconnected")
     }
 
-    fun callPhone(number: String): Boolean = runCommand("Call request sent") {
-        writeString(number)
-        writeStrongBinder(execCallback)
-    }.let { it && _state.value.lastError == null }
+    fun callPhone(number: String): Boolean {
+        _state.value = _state.value.copy(callEvent = null, callDetails = null, lastError = null)
+        return runCommand("Call request sent") {
+            writeString(number)
+            writeStrongBinder(execCallback)
+        }.let { it && _state.value.lastError == null }
+    }
 
     fun hangPhone(): Boolean = runCommand("Hang-up request sent", TRANSACTION_HANG_PHONE)
     fun answerPhone(): Boolean = runCommand("Answer request sent", TRANSACTION_LISTEN_PHONE)
