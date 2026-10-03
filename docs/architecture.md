@@ -19,6 +19,19 @@ This document records the integration boundaries found while comparing the Libre
 
 The `ILibreHuService.aidl` and callback files are copied into several app repositories. The copies are currently the integration mechanism, but they can drift when the API changes. The dialer should not copy this AIDL unless it genuinely needs a LibreHU-service function; HFP call control is a different boundary.
 
+## Shared appearance contract
+
+The `LibreHU-Launcher-App` `ivi` branch owns the shared visual theme:
+
+- `ThemeSettings` stores `AUTO`, `LIGHT` and `DARK` modes and the selected accent.
+- `ThemeController` resolves AUTO using head-unit headlights when available, otherwise the time-of-day fallback (19:00–07:00), then publishes the effective appearance.
+- `ThemeProvider` exposes a read-only row at `content://org.librehu.launcher.theme/theme`: `dark` (0/1) and accent ARGB. It also broadcasts `org.librehu.action.THEME_CHANGED` with `dark` and `accent` extras.
+- `CarPalette` defines the shared dark/light surface and text colors; `Accent` defines the paired dark/light tones for blue, teal, green, yellow, orange, red, pink and purple.
+- `LibreHU-BtnRemap-app` already implements the provider/broadcast follower pattern. The dialer uses the same contract, rather than inventing an independent automatic mode or hardcoding its own lime palette.
+- The FM app shares the same blue/navy circle icon language; the dialer icon now follows that family with a phone glyph.
+
+The dialer observes the provider and theme broadcast while in the foreground. If the launcher is not installed or its provider cannot be read, it falls back to Android's current night configuration and the default blue accent. This keeps the dialer usable as a standalone app while making launcher-driven AUTO and accent changes appear in the dialer.
+
 ## Bluetooth / telephony findings
 
 The previously analysed `ivi-btservice.apk` identifies itself as `com.jancar.btservice` version 3.0.0. It contains a persistent `BluetoothService` and exports a Binder service with action:
