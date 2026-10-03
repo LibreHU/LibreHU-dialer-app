@@ -4,13 +4,15 @@ An automotive phone UI for LibreHU head units, inspired by Android Auto's intera
 
 ## Current status
 
-**UI prototype — not connected to real telephony.** The current screen is a visual and interaction scaffold with clearly labelled demo contacts. The Call buttons only open a preview screen and do not place or receive calls.
+**UI prototype — not connected to real telephony on `main`.** Contacts and recent calls are read from the Android device when permissions are granted. Call buttons still open a preview screen and do not place or receive calls.
 
 ### Included in the first scaffold
 
 - Landscape-first, car-sized interface with high-contrast text and large touch targets.
 - Favorites, recent calls, contacts search and numeric keypad.
 - Preview in-call screen.
+- Settings tab with app and widget personalization.
+- Launcher-aware widgets with automatic light / dark theme and Android Auto-style presentation.
 - Light / dark appearance and accent color synchronized with LibreHU Launcher.
 - Launcher-family app icon and Material icons using the active launcher accent.
 - Fallback to Android's current night mode when the launcher theme provider is unavailable.
