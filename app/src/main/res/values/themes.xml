@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.LibreHU.Dialer" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#101112</item>
+        <item name="android:statusBarColor">#101112</item>
+        <item name="android:navigationBarColor">#101112</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>
