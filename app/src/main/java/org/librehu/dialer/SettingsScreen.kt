@@ -105,7 +105,7 @@ internal fun SettingsScreen(context: Context) {
 
         item {
             SettingsSection("About", "LibreHU Dialer") {
-                Text("Native head-unit phone UI using the stock Jancar Bluetooth Binder service.", color = DialerColors.Muted, fontSize = 12.sp)
+                Text("Native head-unit phone UI with pluggable telephony backends.", color = DialerColors.Muted, fontSize = 12.sp)
                 Text("Version 0.1.0 · ivi integration branch", color = DialerColors.Muted, fontSize = 11.sp)
             }
         }
