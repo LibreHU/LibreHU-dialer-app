@@ -29,7 +29,7 @@ internal class JancarBluetoothClient(context: Context) {
     private var listenerRegistered = false
 
     private val callback = object : Binder() {
-        init { attachInterface(this, CALLBACK_DESCRIPTOR) }
+        init { attachInterface(null, CALLBACK_DESCRIPTOR) }
 
         override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
             if (code == INTERFACE_TRANSACTION) {
@@ -83,7 +83,7 @@ internal class JancarBluetoothClient(context: Context) {
     }
 
     private val currentNameCallback = object : Binder() {
-        init { attachInterface(this, EXEC_CALLBACK_DESCRIPTOR) }
+        init { attachInterface(null, EXEC_CALLBACK_DESCRIPTOR) }
 
         override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
             if (code == INTERFACE_TRANSACTION) {
@@ -108,7 +108,7 @@ internal class JancarBluetoothClient(context: Context) {
     }
 
     private val execCallback = object : Binder() {
-        init { attachInterface(this, EXEC_CALLBACK_DESCRIPTOR) }
+        init { attachInterface(null, EXEC_CALLBACK_DESCRIPTOR) }
 
         override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
             if (code == INTERFACE_TRANSACTION) {
