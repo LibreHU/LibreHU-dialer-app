@@ -66,7 +66,7 @@ private object DialerColors {
 
 private enum class Tab(val title: String) { Favorites("Favorites"), Recents("Recents"), Contacts("Contacts"), Keypad("Keypad"), Settings("Settings") }
 private enum class CallState { None, Calling, Connected }
-private data class Person(val name: String, val number: String, val initials: String, val detail: String)
+internal data class Person(val name: String, val number: String, val initials: String, val detail: String)
 
 private val demo = listOf(
     Person("Alex Morgan", "+33 6 12 34 56 78", "AM", "Mobile · 10:42"),
