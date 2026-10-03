@@ -4,13 +4,13 @@ An automotive phone UI for LibreHU head units, inspired by Android Auto's intera
 
 ## Current status
 
-**UI prototype — not connected to real telephony.** The current screen is a visual and interaction scaffold with clearly labelled demo contacts. The Call buttons only open a preview screen and do not place or receive calls.
+**Early integration stage.** The `ivi` branch binds to the stock `com.jancar.btservice` Binder service and sends call, hang-up, answer/reject and microphone-mute commands. Contacts and recents are still demo data; live call-state integers have not yet been mapped, and this branch must be tested on the UJC201 before being treated as functional.
 
 ### Included in the first scaffold
 
 - Landscape-first, car-sized interface with high-contrast text and large touch targets.
 - Favorites, recent calls, contacts search and numeric keypad.
-- Preview in-call screen.
+- In-call command screen driven by Jancar callback events (raw status values until mapped).
 - Light / dark appearance and accent color synchronized with LibreHU Launcher.
 - Launcher-family app icon and Material icons using the active launcher accent.
 - Fallback to Android's current night mode when the launcher theme provider is unavailable.
@@ -34,7 +34,7 @@ Keep UI state independent of the phone transport. Proposed layers:
 - `bluetooth/`: device discovery / connection status only if the head-unit Bluetooth stack exposes a supported API.
 - `headunit/`: optional LibreHU-service integration; do not use it as a substitute for HFP/Telecom.
 
-Do not assume that Android's public `BluetoothHeadset` APIs control a Bluetooth phone connected to the head unit. On the UJC201, first inspect the original `ivi-btservice.apk`, its manifest, exported services, permissions, AIDL and HFP call-control path. Integrate through a supported interface if one exists. Avoid private API guesses and avoid opening the MCU UART from the dialer.
+Do not assume that Android's public `BluetoothHeadset` APIs control a Bluetooth phone connected to the head unit. On the UJC201, the stock `com.jancar.btservice.bluetooth.BluetoothService` is exported and exposes the `com.jancar.btservice.action.bluetooth` binding action. The `ivi` branch binds to this service and uses verified Binder transaction IDs for a small initial command set. It intentionally displays raw call/connection status codes until their meanings are confirmed on-device. Avoid private API guesses and never open the MCU UART from the dialer.
 
 ## Next milestones
 
