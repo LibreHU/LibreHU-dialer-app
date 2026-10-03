@@ -14,8 +14,8 @@ internal enum class ThemeMode(val key: String, val label: String) {
 
 internal enum class WidgetStyle(val key: String, val label: String) {
     AUTO("auto", "Android Auto"),
-    COMPACT("compact", "Compact")
-    
+    COMPACT("compact", "Compact");
+
     companion object {
         fun fromKey(value: String?): WidgetStyle = entries.firstOrNull { it.key == value } ?: AUTO
     }
