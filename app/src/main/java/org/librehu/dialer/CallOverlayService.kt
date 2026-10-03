@@ -142,7 +142,7 @@ class CallOverlayService : Service() {
         actions.addView(muteButton, weightedButton())
         actions.addView(makeButton("Keypad") { toggleKeypad() }, weightedButton())
         actions.addView(makeButton("Autoradio") { selectAudioRoute(true) }, weightedButton())
-        actions.addView(makeButton("HP local") { selectAudioRoute(false) }, weightedButton())
+        actions.addView(makeButton("HP téléphone") { selectAudioRoute(false) }, weightedButton())
         actions.addView(makeButton("Raccrocher") { endCall() }, weightedButton())
         panel.addView(actions, LinearLayout.LayoutParams(-1, -2))
 
@@ -224,7 +224,7 @@ class CallOverlayService : Service() {
         val next = !muted
         if (btClient.muteMic(next)) {
             muted = next
-            muteButton?.text = if (muted) "Micro ON" else "Mute"
+            muteButton?.text = if (muted) "Micro coupé" else "Mute"
             statusText?.text = if (muted) "Demande de coupure micro envoyée" else "Demande de réactivation micro envoyée"
         } else {
             statusText?.text = btClient.state.value.lastError ?: "Commande mute refusée"
