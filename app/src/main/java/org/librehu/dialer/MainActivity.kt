@@ -372,6 +372,7 @@ private fun DialerApp(btClient: JancarBluetoothClient, initialTab: String? = nul
                                 }
                             }
                         }
+                        Tab.Settings -> SettingsScreen(context)
                     }
                     if (!btState.lastError.isNullOrBlank()) {
                         Text(btState.lastError!!, color = Color(0xFFB3261E), fontSize = 11.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
