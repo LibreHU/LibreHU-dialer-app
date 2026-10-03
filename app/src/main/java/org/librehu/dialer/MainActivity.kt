@@ -82,6 +82,8 @@ private enum class CallState { None, Calling, Connected }
 private data class Person(val name: String, val number: String, val initials: String, val detail: String)
 
 class MainActivity : ComponentActivity() {
+    companion object { const val EXTRA_OPEN_TAB = "org.librehu.dialer.OPEN_TAB" }
+
     private lateinit var themeFollower: ThemeFollower
     private lateinit var btClient: JancarBluetoothClient
 
@@ -97,7 +99,7 @@ class MainActivity : ComponentActivity() {
             window.decorView.systemUiVisibility = if (dark) 0 else
                 android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         }
-        setContent { DialerApp(btClient) }
+        setContent { DialerApp(btClient, intent.getStringExtra(EXTRA_OPEN_TAB)) }
     }
 
     override fun onStart() {
@@ -114,8 +116,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun DialerApp(btClient: JancarBluetoothClient) {
-    var tab by remember { mutableStateOf(Tab.Favorites) }
+private fun DialerApp(btClient: JancarBluetoothClient, initialTab: String? = null) {
+    var tab by remember { mutableStateOf(Tab.values().firstOrNull { it.name == initialTab } ?: Tab.Favorites) }
     var query by remember { mutableStateOf("") }
     var number by remember { mutableStateOf("") }
     var selected by remember { mutableStateOf<Person?>(null) }
@@ -134,6 +136,18 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
     ) { results ->
         dataMessage = if (results.values.all { it }) "Device data access enabled" else "Permission denied. Enable access in Android app settings."
         dataRefresh++
+        DialerRecentCallsWidget.refresh(context)
+    }
+    LaunchedEffect(initialTab) {
+        if (initialTab != null) {
+            val needed = when (tab) {
+                Tab.Contacts -> arrayOf(Manifest.permission.READ_CONTACTS)
+                Tab.Recents, Tab.Favorites -> arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
+                Tab.Keypad -> emptyArray()
+            }
+            val missing = needed.filter { ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
+            if (missing.isNotEmpty()) permissionLauncher.launch(missing.toTypedArray())
+        }
     }
     val openTab: (Tab) -> Unit = { item ->
         tab = item
