@@ -119,6 +119,7 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
     var call by remember { mutableStateOf(CallState.None) }
     var muted by remember { mutableStateOf(false) }
     var overlayVisible by remember { mutableStateOf(false) }
+    var showDtmf by remember { mutableStateOf(false) }
     val btState by btClient.state.collectAsState()
     val requestCall: (Person) -> Unit = { person ->
         selected = person
@@ -126,6 +127,7 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
         if (btClient.callPhone(person.number)) {
             call = CallState.Calling
             overlayVisible = true
+            showDtmf = false
             muted = false
         }
     }
@@ -331,14 +333,30 @@ private fun DialerApp(btClient: JancarBluetoothClient) {
                                     if (muted) "Unmute" else "Mute",
                                     { val next = !muted; if (btClient.muteMic(next)) muted = next }
                                 )
-                                CallAction(Icons.Default.Dialpad, "Keypad", { overlayVisible = false; tab = Tab.Keypad })
+                                CallAction(Icons.Default.Dialpad, if (showDtmf) "Hide keypad" else "Keypad", { showDtmf = !showDtmf })
                                 CallAction(Icons.Default.CallEnd, "End", {
                                     if (btClient.hangPhone()) {
                                         call = CallState.None
                                         overlayVisible = false
+                                        showDtmf = false
                                         muted = false
                                     }
                                 }, isDestructive = true)
+                            }
+                            if (showDtmf) {
+                                Spacer(Modifier.height(14.dp))
+                                listOf(listOf("1", "2", "3"), listOf("4", "5", "6"), listOf("7", "8", "9"), listOf("0")).forEach { digitRow ->
+                                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        digitRow.forEach { digit ->
+                                            FilledTonalButton(
+                                                onClick = { digit.toIntOrNull()?.let { btClient.sendDtmf(it) } },
+                                                modifier = Modifier.weight(1f),
+                                                colors = ButtonDefaults.filledTonalButtonColors(containerColor = DialerColors.Raised, contentColor = DialerColors.Text)
+                                            ) { Text(digit, fontSize = 18.sp) }
+                                        }
+                                    }
+                                    Spacer(Modifier.height(5.dp))
+                                }
                             }
                             if (!btState.lastError.isNullOrBlank()) {
                                 Spacer(Modifier.height(12.dp))
