@@ -235,7 +235,7 @@ internal class JancarBluetoothClient(context: Context) {
         val reply = Parcel.obtain()
         try {
             data.writeInterfaceToken(SERVICE_DESCRIPTOR)
-            binder.transact(code, data, reply, 0)
+            if (!binder.transact(code, data, reply, 0)) throw RemoteException("Binder transaction $code was not handled")
             reply.readException()
             return reply.readInt() != 0
         } finally {
@@ -251,7 +251,7 @@ internal class JancarBluetoothClient(context: Context) {
         try {
             data.writeInterfaceToken(SERVICE_DESCRIPTOR)
             data.args()
-            binder.transact(code, data, reply, 0)
+            if (!binder.transact(code, data, reply, 0)) throw RemoteException("Binder transaction $code was not handled")
             reply.readException()
         } finally {
             reply.recycle()
