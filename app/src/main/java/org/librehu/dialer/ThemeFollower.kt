@@ -49,6 +49,8 @@ internal class ThemeFollower(
         refresh()
     }
 
+    fun refreshNow() = refresh()
+
     fun stop() {
         if (!started) return
         started = false
@@ -62,12 +64,17 @@ internal class ThemeFollower(
                 if (cursor.moveToFirst()) (cursor.getInt(0) != 0) to cursor.getInt(1) else null
             }
         }.getOrNull()
-        if (launcherTheme != null) {
-            onChange(launcherTheme.first, launcherTheme.second)
-        } else {
+        val launcherDark = launcherTheme?.first ?: run {
             val night = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-            onChange(night != Configuration.UI_MODE_NIGHT_NO, 0)
+            night != Configuration.UI_MODE_NIGHT_NO
         }
+        val launcherAccent = launcherTheme?.second ?: 0
+        val effectiveDark = when (DialerPreferences.appTheme(context)) {
+            ThemeMode.AUTO -> launcherDark
+            ThemeMode.LIGHT -> false
+            ThemeMode.DARK -> true
+        }
+        onChange(effectiveDark, launcherAccent)
     }
 
     private companion object {
