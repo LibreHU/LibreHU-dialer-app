@@ -50,6 +50,7 @@ import org.librehu.dialer.DialerWidgetTheme
 import org.librehu.dialer.R
 import org.librehu.dialer.ThemeMode
 import org.librehu.dialer.WidgetStyle
+import org.librehu.dialer.phone.CheckedBackend
 import org.librehu.dialer.phone.PhoneBackends
 import org.librehu.dialer.phone.PhoneLink
 
@@ -103,7 +104,19 @@ fun SettingsScreen(
                     },
                     link.connected,
                 )
-                if (link.message.isNotBlank()) Text(link.message, color = DialerColors.Muted, fontSize = 14.sp)
+                if (link.message.isNotBlank()) {
+                    Text(
+                        if (link.message ==
+                            CheckedBackend.MISMATCH
+                        ) {
+                            stringResource(R.string.phone_mismatch, PhoneBackends.NAME)
+                        } else {
+                            link.message
+                        },
+                        color = DialerColors.Muted,
+                        fontSize = 14.sp,
+                    )
+                }
                 if (PhoneBackends.NEEDS_DEFAULT_DIALER) {
                     val isDefault = actions.isDefaultDialer()
                     StatusLine(stringResource(if (isDefault) R.string.default_dialer_yes else R.string.default_dialer_no), isDefault)
