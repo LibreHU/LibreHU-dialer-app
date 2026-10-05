@@ -19,11 +19,11 @@
             android:layout_weight="1" android:orientation="vertical">
             <TextView android:id="@+id/widget_title"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:text="LibreHU Dialer" android:textColor="#E8EAED"
+                android:text="@string/app_name" android:textColor="#E8EAED"
                 android:textSize="17sp" android:textStyle="bold" />
             <TextView android:id="@+id/widget_subtitle"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:text="Android Auto style · Quick actions"
+                android:text="@string/widget_quick_actions"
                 android:textColor="#9AA0A6" android:textSize="11sp"
                 android:layout_marginTop="2dp" />
         </LinearLayout>
@@ -35,13 +35,13 @@
         android:layout_weight="1" android:orientation="horizontal">
         <TextView android:id="@+id/widget_open_dialer"
             android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
-            android:gravity="center" android:text="Open" android:textSize="13sp"
+            android:gravity="center" android:text="@string/widget_open" android:textSize="13sp"
             android:textStyle="bold" android:textColor="#E8EAED"
             android:padding="10dp" android:layout_marginEnd="4dp"
             android:background="@drawable/widget_chip_dark" />
         <TextView android:id="@+id/widget_contacts"
             android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
-            android:gravity="center" android:text="Contacts" android:textSize="13sp"
+            android:gravity="center" android:text="@string/tab_contacts" android:textSize="13sp"
             android:textStyle="bold" android:textColor="#E8EAED"
             android:padding="10dp" android:layout_marginStart="4dp"
             android:background="@drawable/widget_chip_dark" />
@@ -53,13 +53,13 @@
         android:layout_weight="1" android:orientation="horizontal">
         <TextView android:id="@+id/widget_recents"
             android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
-            android:gravity="center" android:text="Recent calls" android:textSize="13sp"
+            android:gravity="center" android:text="@string/tab_recents" android:textSize="13sp"
             android:textStyle="bold" android:textColor="#E8EAED"
             android:padding="10dp" android:layout_marginEnd="4dp"
             android:background="@drawable/widget_chip_dark" />
         <TextView android:id="@+id/widget_keypad"
             android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
-            android:gravity="center" android:text="Keypad" android:textSize="13sp"
+            android:gravity="center" android:text="@string/tab_keypad" android:textSize="13sp"
             android:textStyle="bold" android:textColor="#E8EAED"
             android:padding="10dp" android:layout_marginStart="4dp"
             android:background="@drawable/widget_chip_dark" />

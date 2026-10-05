@@ -22,6 +22,8 @@ This contract was extracted from the stock `ivi-btservice.apk`. It is specific t
 | 38 | `requestBluetoothListener` | `IBluetoothCallback` |
 | 39 | `unrequestBluetoothListener` | `IBluetoothCallback` |
 | 52 | `getCurrentDeviceName` | `IBluetoothExecCallback` |
+| 29 | `transferCall` | `IBluetoothExecCallback` (toggles the call audio car / phone) |
+| 59 | `threePartyCallCtrl` | `int action, IBluetoothExecCallback` |
 | 70 | `isPowerOn` | `boolean` return |
 
 ## Callback transactions
@@ -46,10 +48,25 @@ Descriptor: `com.jancar.btservice.bluetooth.IBluetoothExecCallback`
 | 1 | `onSuccess` | `String` |
 | 2 | `onFailure` | `int` |
 
+## Values (from the decompiled stock APK)
+
+- `onConnectStatus`: 0 disconnected, 1 connected, 2 connecting, 4 pairing (`SettingUtil`).
+- `onCallStatus` (`IVIBluetooth.CallStatus`): 0 normal, 1 incoming, 2 outgoing, 3 hang-up, 4 talking, 5 second
+  incoming call, 6 held, 7 second outgoing call, 8 two calls (talking), 9 second call ended. Built by
+  `DataUtil.toIVICallState` from the HFP client call state (0 active → 4, 1/6 held → 6, 2/3 dialing/alerting → 2,
+  4 incoming → 1, 5 waiting → 5, 7 terminated → 3).
+- `onVoiceChange`: 1 call audio in the car (SCO connected), 0 on the phone.
+- `requestDTMF(int)`: the character code (`'0'`…`'9'`, `'*'`, `'#'`, `'+'`).
+- `threePartyCallCtrl(action)`: 0 end the second call, 1 end the current call and answer, 2 answer the waiting call
+  (holds the current one), 3 merge, 4 swap.
+- Exec callback errors: 2 no device, 3 bad DTMF key, 10 not in a call, 12 unknown action.
+
+Note: btservice's `CallUtil` drives `android.telecom.Call` objects: on the stock ROM Jancar is the Telecom phone app,
+which is why this branch does not register an InCallService.
+
 ## Known limitations
 
-- The integer meanings for connection, call, voice, A2DP, error, battery and signal events are not mapped yet.
+- Battery and signal ranges are passed through as reported.
 - A successful Binder transaction confirms dispatch, not successful call setup or an established call.
-- The current dialer still uses demo contacts and call history.
 - The callback and transaction protocol must be revalidated if the vendor service APK changes.
 - Runtime validation on the stock UJC201 is required before treating the integration as production-ready.

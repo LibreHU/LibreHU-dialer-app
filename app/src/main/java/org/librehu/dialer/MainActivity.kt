@@ -1,535 +1,188 @@
 package org.librehu.dialer
 
 import android.Manifest
-import android.content.Context
+import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.content.pm.PackageManager
-import android.provider.CallLog
-import android.provider.Settings
-import android.provider.ContactsContract
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.telecom.TelecomManager
+import android.view.View
+import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import androidx.core.content.ContextCompat
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import org.librehu.dialer.backend.jancar.JancarBluetoothClient
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import org.librehu.dialer.phone.CallWatcherService
+import org.librehu.dialer.phone.Phone
+import org.librehu.dialer.phone.PhoneBackend
+import org.librehu.dialer.phone.PhoneBackends
+import org.librehu.dialer.phone.TelecomBackend
+import org.librehu.dialer.ui.DialerApp
+import org.librehu.dialer.ui.DialerColors
+import org.librehu.dialer.ui.DialerPalette
+import org.librehu.dialer.ui.DialerState
+import org.librehu.dialer.ui.DialerTheme
+import org.librehu.dialer.ui.SettingsActions
+import org.librehu.dialer.ui.Tab
 
-internal data class DialerPalette(
-    val dark: Boolean,
-    val background: Color,
-    val surface: Color,
-    val surfaceHigh: Color,
-    val accent: Color,
-    val onAccent: Color,
-    val text: Color,
-    val textDim: Color,
-) {
-    companion object {
-        fun fromLauncher(dark: Boolean, accentArgb: Int): DialerPalette {
-            val accent = if (accentArgb != 0) Color(accentArgb) else Color(if (dark) 0xFF8AB4F8 else 0xFF1A73E8)
-            return if (dark) {
-                DialerPalette(true, Color(0xFF000000), Color(0xFF1E1F22), Color(0xFF2B2D31),
-                    accent, Color(0xFF202124), Color(0xFFE8EAED), Color(0xFF9AA0A6))
-            } else {
-                DialerPalette(false, Color(0xFFF1F3F4), Color(0xFFFFFFFF), Color(0xFFE8EAED),
-                    accent, Color.White, Color(0xFF202124), Color(0xFF5F6368))
-            }
-        }
-    }
-}
-
-/** Same palette contract as LibreHU Launcher: effective night mode + launcher-selected accent. */
-internal object DialerColors {
-    var palette by mutableStateOf(DialerPalette.fromLauncher(true, 0))
-    val Bg get() = palette.background
-    val Card get() = palette.surface
-    val Raised get() = palette.surfaceHigh
-    val Accent get() = palette.accent
-    val OnAccent get() = palette.onAccent
-    val Text get() = palette.text
-    val Muted get() = palette.textDim
-}
-
-private enum class Tab(val title: String) { Favorites("Favorites"), Recents("Recents"), Contacts("Contacts"), Keypad("Keypad"), Settings("Settings") }
-private enum class CallState { None, Calling, Connected }
-private data class Person(val name: String, val number: String, val initials: String, val detail: String)
-
+/** Phone app: favourites, recent calls, contacts, keypad, the call screen and settings. */
 class MainActivity : ComponentActivity() {
-    companion object { const val EXTRA_OPEN_TAB = "org.librehu.dialer.OPEN_TAB" }
-
     private lateinit var themeFollower: ThemeFollower
-    private lateinit var btClient: JancarBluetoothClient
+    private lateinit var phone: PhoneBackend
+    private val state =
+        DialerState(
+            tab = mutableStateOf(Tab.FAVORITES),
+            number = mutableStateOf(""),
+            showCall = mutableIntStateOf(0),
+            dataVersion = mutableIntStateOf(0),
+        )
+
+    /** Number to call once CALL_PHONE is granted. */
+    private var pendingDial: String? = null
+
+    private val permissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            state.dataVersion.value++
+            val n = pendingDial
+            pendingDial = null
+            val needed = PhoneBackends.DIAL_PERMISSION
+            if (n != null && (needed == null || granted(needed))) dial(n)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        btClient = JancarBluetoothClient(this)
-        themeFollower = ThemeFollower(this) { dark, accent ->
-            DialerColors.palette = DialerPalette.fromLauncher(dark, accent)
-            val bg = DialerColors.Bg
-            window.statusBarColor = android.graphics.Color.rgb(
-                (bg.red * 255).toInt(), (bg.green * 255).toInt(), (bg.blue * 255).toInt())
-            window.navigationBarColor = window.statusBarColor
-            window.decorView.systemUiVisibility = if (dark) 0 else
-                android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        phone = Phone.get(this)
+        CallWatcherService.start(this)
+        themeFollower =
+            ThemeFollower(this) { dark, accent ->
+                DialerColors.palette = DialerPalette.fromLauncher(dark, accent)
+                val bg = DialerColors.Bg
+                @Suppress("DEPRECATION")
+                window.statusBarColor =
+                    android.graphics.Color.rgb((bg.red * 255).toInt(), (bg.green * 255).toInt(), (bg.blue * 255).toInt())
+                @Suppress("DEPRECATION")
+                window.navigationBarColor = window.statusBarColor
+                @Suppress("DEPRECATION")
+                window.decorView.systemUiVisibility =
+                    if (dark) 0 else View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+            }
+        savedInstanceState?.getString(STATE_TAB)?.let { Tab.parse(it) }?.let { state.tab.value = it }
+        handle(intent)
+        if (savedInstanceState == null) {
+            val missing = basePermissions().filterNot(::granted)
+            if (missing.isNotEmpty()) permissions.launch(missing.toTypedArray())
         }
-        setContent { DialerApp(btClient, intent.getStringExtra(EXTRA_OPEN_TAB)) }
+        val settings =
+            SettingsActions(
+                requestPermissions = { permissions.launch(basePermissions().toTypedArray()) },
+                makeDefaultDialer = ::requestDefaultDialer,
+                isDefaultDialer = { TelecomBackend.isDefaultDialer(this) },
+                openOverlaySettings = {
+                    open(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
+                },
+                refreshTheme = { themeFollower.refreshNow() },
+            )
+        setContent {
+            DialerTheme {
+                DialerApp(phone, state, ::dial, { permissions.launch(basePermissions().toTypedArray()) }, settings)
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handle(intent)
     }
 
     override fun onStart() {
         super.onStart()
+        visible = true
         themeFollower.start()
-        btClient.bind()
+        CallBubble.hide(this)
+        state.dataVersion.value++
     }
-
-    internal fun refreshTheme() = themeFollower.refreshNow()
 
     override fun onStop() {
-        btClient.unbind()
+        visible = false
         themeFollower.stop()
+        if (phone.calls.value.any { it.status.live }) CallBubble.show(this)
         super.onStop()
     }
-}
 
-@Composable
-private fun DialerApp(btClient: JancarBluetoothClient, initialTab: String? = null) {
-    var tab by remember { mutableStateOf(Tab.values().firstOrNull { it.name == initialTab } ?: Tab.Favorites) }
-    var query by remember { mutableStateOf("") }
-    var number by remember { mutableStateOf("") }
-    var selected by remember { mutableStateOf<Person?>(null) }
-    var call by remember { mutableStateOf(CallState.None) }
-    val btState by btClient.state.collectAsState()
-    val context = LocalContext.current
-    var dataRefresh by remember { mutableIntStateOf(0) }
-    var deviceContacts by remember { mutableStateOf<List<Person>>(emptyList()) }
-    var deviceRecents by remember { mutableStateOf<List<Person>>(emptyList()) }
-    var dataMessage by remember { mutableStateOf("Allow Android permissions to read device data") }
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { results ->
-        dataMessage = if (results.values.all { it }) "Device data access enabled" else "Permission denied. Enable access in Android app settings."
-        dataRefresh++
-        DialerRecentCallsWidget.refresh(context)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(STATE_TAB, state.tab.value.name)
     }
-    LaunchedEffect(initialTab) {
-        if (initialTab != null) {
-            val needed = when (tab) {
-                Tab.Contacts -> arrayOf(Manifest.permission.READ_CONTACTS)
-                Tab.Recents, Tab.Favorites -> arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
-                Tab.Keypad, Tab.Settings -> emptyArray()
-            }
-            val missing = needed.filter { ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
-            if (missing.isNotEmpty()) permissionLauncher.launch(missing.toTypedArray())
+
+    private fun handle(intent: Intent?) {
+        intent ?: return
+        Tab.parse(intent.getStringExtra(EXTRA_OPEN_TAB))?.let { state.tab.value = it }
+        if (intent.getBooleanExtra(EXTRA_SHOW_CALL, false)) state.showCall.value++
+        val data = intent.data
+        if ((intent.action == Intent.ACTION_DIAL || intent.action == Intent.ACTION_VIEW) && data?.scheme == "tel") {
+            state.number.value = data.schemeSpecificPart.orEmpty()
+            state.tab.value = Tab.KEYPAD
         }
     }
-    val openTab: (Tab) -> Unit = { item ->
-        tab = item
-        val needed = when (item) {
-            Tab.Contacts -> arrayOf(Manifest.permission.READ_CONTACTS)
-            Tab.Recents, Tab.Favorites -> arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
-            else -> emptyArray()
+
+    private fun dial(number: String) {
+        val n = number.trim()
+        if (n.isEmpty()) return
+        val needed = PhoneBackends.DIAL_PERMISSION
+        if (needed != null && !granted(needed)) {
+            pendingDial = n
+            permissions.launch(arrayOf(needed))
+            return
         }
-        if (needed.isNotEmpty()) {
-            val missing = needed.filter { ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED }
-            if (missing.isNotEmpty()) permissionLauncher.launch(missing.toTypedArray()) else dataRefresh++
-        }
-    }
-    LaunchedEffect(tab, dataRefresh) {
-        when (tab) {
-            Tab.Contacts, Tab.Favorites -> {
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-                    deviceContacts = withContext(Dispatchers.IO) { readDeviceContacts(context) }
-                    dataMessage = if (deviceContacts.isEmpty()) "No contacts found on this device" else deviceContacts.size.toString() + " phone entries"
-                } else {
-                    deviceContacts = emptyList()
-                    dataMessage = "Contacts permission required"
-                }
-                if (tab == Tab.Favorites && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED) {
-                    deviceRecents = withContext(Dispatchers.IO) { readDeviceCallLog(context) }
-                }
-            }
-            Tab.Recents -> {
-                val contactsAllowed = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
-                val logsAllowed = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
-                if (contactsAllowed && logsAllowed) {
-                    deviceRecents = withContext(Dispatchers.IO) { readDeviceCallLog(context) }
-                    dataMessage = if (deviceRecents.isEmpty()) "No calls found in the device call log" else deviceRecents.size.toString() + " recent calls"
-                } else {
-                    deviceRecents = emptyList()
-                    dataMessage = "Contacts and call-log permissions required"
-                }
-            }
-            else -> Unit
-        }
-    }
-    var pendingOverlayCall by remember { mutableStateOf<Person?>(null) }
-    val performCall: (Person) -> Unit = { person ->
-        selected = person
-        number = person.number
-        if (btClient.callPhone(person.number)) {
-            call = CallState.Calling
-            CallOverlayService.start(context, person.name, person.number)
+        if (phone.dial(n)) {
+            state.number.value = ""
+            state.showCall.value++
         } else {
-            dataMessage = btClient.state.value.lastError ?: "Jancar refused the call request"
+            Toast.makeText(this, getString(R.string.call_failed, n), Toast.LENGTH_LONG).show()
         }
     }
-    val overlayPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        val pending = pendingOverlayCall
-        pendingOverlayCall = null
-        if (Settings.canDrawOverlays(context) && pending != null) {
-            performCall(pending)
-        } else if (pending != null) {
-            dataMessage = "Overlay permission is required for call controls outside the dialer"
-        }
-    }
-    val requestCall: (Person) -> Unit = { person ->
-        if (Settings.canDrawOverlays(context)) {
-            performCall(person)
-        } else {
-            pendingOverlayCall = person
-            overlayPermissionLauncher.launch(
-                Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
-            )
-        }
-    }
-    val p = DialerColors.palette
-    val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-    val scheme = if (p.dark) {
-        darkColorScheme(background = p.background, surface = p.surface, surfaceVariant = p.surfaceHigh,
-            primary = p.accent, onPrimary = p.onAccent, onBackground = p.text, onSurface = p.text,
-            onSurfaceVariant = p.textDim, secondary = p.accent)
-    } else {
-        lightColorScheme(background = p.background, surface = p.surface, surfaceVariant = p.surfaceHigh,
-            primary = p.accent, onPrimary = p.onAccent, onBackground = p.text, onSurface = p.text,
-            onSurfaceVariant = p.textDim, secondary = p.accent)
-    }
 
-    MaterialTheme(colorScheme = scheme) {
-        Surface(Modifier.fillMaxSize(), color = DialerColors.Bg, contentColor = DialerColors.Text) {
-            Box(Modifier.fillMaxSize()) {
-            Row(Modifier.fillMaxSize().padding(14.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                Column(Modifier.width(86.dp).fillMaxHeight().clip(RoundedCornerShape(26.dp)).background(DialerColors.Card).padding(vertical = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Box(Modifier.size(48.dp).clip(CircleShape).background(DialerColors.Accent), contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.Call, null, tint = DialerColors.OnAccent)
-                    }
-                    Spacer(Modifier.height(12.dp))
-                    Tab.values().forEach { item ->
-                        val active = item == tab
-                        Column(Modifier.fillMaxWidth().padding(horizontal = 7.dp).clip(RoundedCornerShape(16.dp))
-                            .background(if (active) DialerColors.Raised else Color.Transparent)
-                            .clickable { openTab(item) }.padding(vertical = 13.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(when (item) {
-                                Tab.Favorites -> Icons.Default.Star
-                                Tab.Recents -> Icons.Default.History
-                                Tab.Contacts -> Icons.Default.Contacts
-                                Tab.Keypad -> Icons.Default.Dialpad
-                                Tab.Settings -> Icons.Default.Settings
-                            }, item.title, tint = if (active) DialerColors.Accent else DialerColors.Muted, modifier = Modifier.size(23.dp))
-                            Spacer(Modifier.height(5.dp))
-                            Text(item.title, color = if (active) DialerColors.Text else DialerColors.Muted, fontSize = 10.sp)
-                        }
-                    }
-                    Spacer(Modifier.weight(1f))
-                    Icon(if (btState.serviceAvailable && btState.bluetoothPowered == true) Icons.Default.Bluetooth else Icons.Default.BluetoothDisabled, "Jancar Bluetooth state", tint = DialerColors.Muted)
-                    Text("PHONE", color = DialerColors.Muted, fontSize = 9.sp, letterSpacing = 1.2.sp)
-                }
-                Column(Modifier.weight(1f).fillMaxHeight()) {
-                    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(DialerColors.Card).padding(horizontal = 20.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text("Phone", fontSize = 25.sp, fontWeight = FontWeight.SemiBold)
-                            Text(btState.connectionEvent ?: btState.serviceMessage, color = DialerColors.Muted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        }
-                        Row(Modifier.clip(CircleShape).background(DialerColors.Raised).padding(horizontal = 12.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Box(Modifier.size(7.dp).clip(CircleShape).background(if (btState.serviceAvailable) DialerColors.Accent else DialerColors.Muted))
-                            Spacer(Modifier.width(8.dp)); Text(
-                                when {
-                                    !btState.serviceAvailable -> "Jancar unavailable"
-                                    btState.bluetoothPowered == false -> "Bluetooth off"
-                                    !btState.currentPhoneName.isNullOrBlank() -> btState.currentPhoneName!!
-                                    btState.bluetoothPowered == true -> "Bluetooth powered"
-                                    else -> "Connecting…"
-                                }, color = DialerColors.Muted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        }
-                        Spacer(Modifier.width(20.dp)); Text(time, fontSize = 22.sp)
-                    }
-                    Spacer(Modifier.height(12.dp))
-                    when (tab) {
-                        Tab.Favorites -> {
-                            Heading("Quick contacts", if (deviceContacts.isEmpty()) dataMessage else "Contacts from this device")
-                            if (deviceContacts.isEmpty()) {
-                                Text("Open Contacts and grant permission to see people here.", color = DialerColors.Muted,
-                                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(DialerColors.Card).padding(18.dp))
-                            } else {
-                                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    deviceContacts.take(4).forEach { person ->
-                                        Column(Modifier.weight(1f).clip(RoundedCornerShape(22.dp)).background(DialerColors.Card)
-                                            .clickable { selected = person; number = person.number }.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                                            Avatar(person, 58); Spacer(Modifier.height(10.dp))
-                                            Text(person.name, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                            Text(person.detail, fontSize = 11.sp, color = DialerColors.Muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                            Spacer(Modifier.height(8.dp))
-                                            FilledTonalButton(onClick = { requestCall(person) },
-                                                colors = ButtonDefaults.filledTonalButtonColors(containerColor = DialerColors.Raised, contentColor = DialerColors.Accent)) {
-                                                Icon(Icons.Default.Call, null); Spacer(Modifier.width(4.dp)); Text("Call")
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            Spacer(Modifier.height(14.dp)); Heading("Recent calls", if (deviceRecents.isEmpty()) "No call history available" else "Latest calls from this device")
-                            LazyColumn(Modifier.fillMaxSize().clip(RoundedCornerShape(22.dp)).background(DialerColors.Card), contentPadding = PaddingValues(8.dp)) {
-                                if (deviceRecents.isEmpty()) {
-                                    item { Text("Call history appears here after granting permission.", color = DialerColors.Muted, modifier = Modifier.padding(18.dp)) }
-                                }
-                                items(deviceRecents.take(5)) { person ->
-                                    PersonRow(person, { selected = person; number = person.number }, { requestCall(person) })
-                                }
-                            }
-                        }
-                        Tab.Recents -> ContactList("Recent calls", dataMessage, deviceRecents,
-                            { selected = it; number = it.number }, { requestCall(it) })
-                        Tab.Contacts -> {
-                            Heading("Contacts", "Find someone to call")
-                            Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(DialerColors.Card).padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Search, null, tint = DialerColors.Muted); Spacer(Modifier.width(10.dp))
-                                BasicTextField(value = query, onValueChange = { query = it }, singleLine = true,
-                                    textStyle = androidx.compose.ui.text.TextStyle(color = DialerColors.Text, fontSize = 16.sp),
-                                    modifier = Modifier.fillMaxWidth(), decorationBox = { inner ->
-                                        if (query.isEmpty()) Text("Search name or number", color = DialerColors.Muted)
-                                        inner()
-                                    })
-                            }
-                            Spacer(Modifier.height(10.dp))
-                            ContactList("All contacts", dataMessage, deviceContacts.filter { it.name.contains(query, true) || it.number.contains(query) },
-                                { selected = it; number = it.number }, { requestCall(it) })
-                        }
-                        Tab.Keypad -> {
-                            Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(22.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Column(Modifier.weight(0.9f)) {
-                                    Heading("Keypad", "Enter a phone number")
-                                    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(DialerColors.Card).padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                        Text(
-    number.ifBlank { "Enter number" },
-    color = if (number.isBlank()) DialerColors.Muted else DialerColors.Text,
-    fontSize = 19.sp,
-    modifier = Modifier.weight(1f).pointerInput(Unit) {
-        detectTapGestures(onLongPress = { number = "" })
-    },
-    maxLines = 1
-)
-                                        IconButton(onClick = { if (number.isNotEmpty()) number = number.dropLast(1) }) { Icon(Icons.Default.Backspace, "Delete", tint = DialerColors.Muted) }
-                                    }
-                                    Spacer(Modifier.height(10.dp))
-                                    Button(onClick = { requestCall(Person("New number", number, number.take(2).ifBlank { "?" }, "")) },
-                                        enabled = number.isNotBlank(), modifier = Modifier.fillMaxWidth().height(54.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = DialerColors.Accent, contentColor = DialerColors.OnAccent)) {
-                                        Icon(Icons.Default.Call, null); Spacer(Modifier.width(8.dp)); Text("Call", fontSize = 17.sp)
-                                    }
-                                    TextButton(onClick = { number = "" }, modifier = Modifier.align(Alignment.CenterHorizontally)) { Text("Clear", color = DialerColors.Muted) }
-                                }
-                                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    listOf(listOf("1" to "", "2" to "ABC", "3" to "DEF"), listOf("4" to "GHI", "5" to "JKL", "6" to "MNO"),
-                                        listOf("7" to "PQRS", "8" to "TUV", "9" to "WXYZ"), listOf("*" to "", "0" to "+", "#" to "")).forEach { row ->
-                                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                            row.forEach { (digit, letters) ->
-                                                Column(Modifier.weight(1f).height(58.dp).clip(RoundedCornerShape(16.dp)).background(DialerColors.Raised)
-                                                    .clickable { number += digit }, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                                                    Text(digit, fontSize = 22.sp)
-                                                    if (letters.isNotEmpty()) Text(letters, fontSize = 9.sp, color = DialerColors.Muted)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        Tab.Settings -> SettingsScreen(context)
-                    }
-                    if (!btState.lastError.isNullOrBlank()) {
-                        Text(btState.lastError!!, color = Color(0xFFB3261E), fontSize = 11.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    }
-                    if (!btState.lastCommandResult.isNullOrBlank() && call == CallState.None) {
-                        Text(btState.lastCommandResult!!, color = DialerColors.Muted, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    }
-                    if (call == CallState.None) {
-                        Spacer(Modifier.height(5.dp)); Text("JANCAR BT SERVICE · DEVICE CONTACTS", color = DialerColors.Muted, fontSize = 10.sp, letterSpacing = 1.1.sp)
-                    }
-                }
-            }
-
-
-            }
-        }
-    }
-}
-
-
-private fun initialsFor(name: String): String =
-    name.trim().split(Regex("\\s+")).filter { it.isNotBlank() }.take(2)
-        .mapNotNull { it.firstOrNull()?.uppercaseChar() }.joinToString("").ifBlank { "?" }
-
-private fun readDeviceContacts(context: Context): List<Person> {
-    val result = mutableListOf<Person>()
-    val projection = arrayOf(
-        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-        ContactsContract.CommonDataKinds.Phone.NUMBER,
-        ContactsContract.CommonDataKinds.Phone.TYPE
-    )
-    context.contentResolver.query(
-        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-        projection, null, null,
-        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " COLLATE NOCASE ASC"
-    )?.use { cursor ->
-        val nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
-        val numberIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)
-        val typeIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.TYPE)
-        while (cursor.moveToNext()) {
-            val name = cursor.getString(nameIndex)?.trim().orEmpty().ifBlank { "Unknown contact" }
-            val number = cursor.getString(numberIndex)?.trim().orEmpty()
-            if (number.isNotBlank()) {
-                val type = ContactsContract.CommonDataKinds.Phone.getTypeLabel(
-                    context.resources, cursor.getInt(typeIndex), null
-                ).toString()
-                result += Person(name, number, initialsFor(name), type)
-            }
-        }
-    }
-    return result
-}
-
-private fun readDeviceCallLog(context: Context): List<Person> {
-    val contactNames = mutableMapOf<String, String>()
-    runCatching {
-        context.contentResolver.query(
-            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-            arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER),
-            null, null, null
-        )?.use { cursor ->
-            val nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
-            val numberIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)
-            while (cursor.moveToNext()) {
-                val name = cursor.getString(nameIndex)?.trim().orEmpty()
-                val number = cursor.getString(numberIndex)?.filter { it.isDigit() || it == '+' }.orEmpty()
-                if (name.isNotBlank() && number.isNotBlank()) contactNames[number] = name
-            }
-        }
-    }
-    val result = mutableListOf<Person>()
-    val projection = arrayOf(
-        CallLog.Calls.NUMBER, CallLog.Calls.CACHED_NAME, CallLog.Calls.TYPE,
-        CallLog.Calls.DATE, CallLog.Calls.DURATION
-    )
-    context.contentResolver.query(
-        CallLog.Calls.CONTENT_URI, projection, null, null, CallLog.Calls.DATE + " DESC"
-    )?.use { cursor ->
-        val numberIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.NUMBER)
-        val nameIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.CACHED_NAME)
-        val typeIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.TYPE)
-        val dateIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.DATE)
-        val durationIndex = cursor.getColumnIndexOrThrow(CallLog.Calls.DURATION)
-        val dateFormat = SimpleDateFormat("dd MMM · HH:mm", Locale.getDefault())
-        while (cursor.moveToNext()) {
-            val number = cursor.getString(numberIndex)?.trim().orEmpty().ifBlank { "Unknown number" }
-            val cachedName = cursor.getString(nameIndex)?.trim().orEmpty()
-            val normalized = number.filter { it.isDigit() || it == '+' }
-            val name = cachedName.ifBlank { contactNames[normalized] ?: number }
-            val type = when (cursor.getInt(typeIndex)) {
-                CallLog.Calls.INCOMING_TYPE -> "Incoming"
-                CallLog.Calls.OUTGOING_TYPE -> "Outgoing"
-                CallLog.Calls.MISSED_TYPE -> "Missed"
-                CallLog.Calls.REJECTED_TYPE -> "Rejected"
-                CallLog.Calls.BLOCKED_TYPE -> "Blocked"
-                CallLog.Calls.VOICEMAIL_TYPE -> "Voicemail"
-                else -> "Call"
-            }
-            val date = dateFormat.format(Date(cursor.getLong(dateIndex)))
-            val seconds = cursor.getLong(durationIndex)
-            val duration = if (seconds >= 3600) {
-                String.format(Locale.getDefault(), "%d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60)
+    @Suppress("DEPRECATION")
+    private fun requestDefaultDialer() {
+        val intent =
+            if (Build.VERSION.SDK_INT >= 29) {
+                getSystemService(android.app.role.RoleManager::class.java).createRequestRoleIntent(android.app.role.RoleManager.ROLE_DIALER)
             } else {
-                String.format(Locale.getDefault(), "%d:%02d", seconds / 60, seconds % 60)
+                Intent(
+                    TelecomManager.ACTION_CHANGE_DEFAULT_DIALER,
+                ).putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
             }
-            result += Person(name, number, initialsFor(name), "$type · $date · $duration")
+        if (!open(intent)) open(Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS))
+    }
+
+    private fun open(intent: Intent): Boolean =
+        try {
+            startActivity(intent)
+            true
+        } catch (_: ActivityNotFoundException) {
+            false
         }
-    }
-    return result
-}
 
-@Composable internal fun Heading(title: String, subtitle: String) {
-    Column(Modifier.padding(start = 4.dp, bottom = 10.dp, top = 2.dp)) {
-        Text(title, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
-        Text(subtitle, fontSize = 12.sp, color = DialerColors.Muted)
-    }
-}
+    private fun basePermissions(): List<String> =
+        listOfNotNull(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG, PhoneBackends.DIAL_PERMISSION)
 
-@Composable private fun Avatar(person: Person, size: Int) {
-    Box(Modifier.size(size.dp).clip(CircleShape).background(DialerColors.Raised), contentAlignment = Alignment.Center) {
-        Text(person.initials, color = DialerColors.Accent, fontSize = (size / 3.4).sp, fontWeight = FontWeight.SemiBold)
-    }
-}
+    private fun granted(permission: String) = checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
 
-@Composable private fun PersonRow(person: Person, onSelect: () -> Unit, onCall: () -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable { onSelect() }.padding(10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Avatar(person, 44)
-        Column(Modifier.weight(1f)) {
-            Text(person.name, fontSize = 15.sp, fontWeight = FontWeight.Medium)
-            Text(person.detail, color = DialerColors.Muted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        }
-        IconButton(onClick = onCall) { Icon(Icons.Default.Call, "Call", tint = DialerColors.Accent) }
-    }
-}
+    companion object {
+        /** Tab to open: FAVORITES, RECENTS, CONTACTS, KEYPAD or SETTINGS (any case). */
+        const val EXTRA_OPEN_TAB = "org.librehu.dialer.extra.OPEN_TAB"
 
-@Composable private fun ContactList(title: String, subtitle: String, people: List<Person>, onSelect: (Person) -> Unit, onCall: (Person) -> Unit) {
-    Heading(title, subtitle)
-    LazyColumn(Modifier.fillMaxSize().clip(RoundedCornerShape(22.dp)).background(DialerColors.Card), contentPadding = PaddingValues(8.dp)) {
-        if (people.isEmpty()) {
-            item {
-                Text("No entries to display", color = DialerColors.Muted, fontSize = 14.sp,
-                    modifier = Modifier.fillMaxWidth().padding(24.dp))
-            }
-        }
-        items(people) { person -> PersonRow(person, { onSelect(person) }, { onCall(person) }) }
-    }
-}
+        /** Brings the call screen up. */
+        const val EXTRA_SHOW_CALL = "org.librehu.dialer.extra.SHOW_CALL"
+        private const val STATE_TAB = "tab"
 
-@Composable private fun CallAction(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, onClick: () -> Unit, isDestructive: Boolean = false) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(7.dp)) {
-        val container = if (isDestructive) Color(0xFFB3261E) else DialerColors.Raised
-        FilledIconButton(onClick = onClick, modifier = Modifier.size(58.dp),
-            colors = IconButtonDefaults.filledIconButtonColors(containerColor = container, contentColor = if (isDestructive) Color.White else DialerColors.Text)) {
-            Icon(icon, label, modifier = Modifier.size(24.dp))
-        }
-        Text(label, color = DialerColors.Muted, fontSize = 11.sp)
+        /** The activity is on screen (the call bubble and the backends check it). */
+        @Volatile
+        var visible = false
     }
 }
