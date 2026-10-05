@@ -99,4 +99,5 @@
     <string name="librehu_missing">LibreHU-service n\'est pas installé (ou installé après cette appli : réinstallez l\'appli)</string>
     <string name="librehu_too_old">LibreHU-service trop ancien : API Bluetooth 3 nécessaire</string>
     <string name="librehu_bt_off">Le Bluetooth est désactivé</string>
+    <string name="phone_mismatch">Android voit le téléphone connecté pour les appels, mais le service téléphone (%1$s) non : les appels peuvent échouer. Vérifiez qu\'il tourne et suit le Bluetooth.</string>
 </resources>
