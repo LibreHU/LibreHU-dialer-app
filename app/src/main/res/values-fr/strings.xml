@@ -94,4 +94,5 @@
     <string name="widget_recent_calls_description">Les derniers appels du téléphone</string>
     <string name="watcher_title">Téléphone prêt pour les appels</string>
     <string name="watcher_channel">Surveillance des appels</string>
+    <string name="phone_mismatch">Android voit le téléphone connecté pour les appels, mais le service téléphone (%1$s) non : les appels peuvent échouer. Vérifiez qu\'il tourne et suit le Bluetooth.</string>
 </resources>
