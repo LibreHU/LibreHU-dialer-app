@@ -94,4 +94,9 @@
     <string name="widget_recent_calls_description">The latest calls of the phone</string>
     <string name="watcher_title">Phone ready for calls</string>
     <string name="watcher_channel">Phone call watcher</string>
+    <string name="librehu_connecting">Connecting to LibreHU-service…</string>
+    <string name="librehu_lost">LibreHU-service stopped</string>
+    <string name="librehu_missing">LibreHU-service is not installed (or installed after this app: reinstall the app)</string>
+    <string name="librehu_too_old">LibreHU-service is too old: Bluetooth API 3 needed</string>
+    <string name="librehu_bt_off">Bluetooth is off</string>
 </resources>

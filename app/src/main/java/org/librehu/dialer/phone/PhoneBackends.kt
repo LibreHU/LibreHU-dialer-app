@@ -1,18 +1,17 @@
 package org.librehu.dialer.phone
 
-import android.Manifest
 import android.content.Context
 
-/** Backend of the `main` branch: Android Telecom. */
+/** Backend of the `librehu-service` branch: LibreHU-service Bluetooth API. */
 object PhoneBackends {
-    fun create(context: Context): PhoneBackend = TelecomBackend(context)
+    fun create(context: Context): PhoneBackend = LibreHuBackend(context)
 
-    /** This build needs to be Android's default phone app to see calls (Telecom InCallService). */
-    const val NEEDS_DEFAULT_DIALER = true
+    /** LibreHU-service drives the calls: this app does not need to be the default phone app. */
+    const val NEEDS_DEFAULT_DIALER = false
 
-    /** Runtime permission needed to place calls, null when none. */
-    val DIAL_PERMISSION: String? = Manifest.permission.CALL_PHONE
+    /** LibreHU-service places the calls itself, no Android permission needed. */
+    val DIAL_PERMISSION: String? = null
 
     /** Shown in Settings → About. */
-    const val NAME = "Android Telecom"
+    const val NAME = "LibreHU-service"
 }
