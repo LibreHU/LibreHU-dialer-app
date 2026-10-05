@@ -16,7 +16,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        // LibreHU-service API (app/src/main/aidl, copied from LibreHU/LibreHU-service).
+        aidl = true
+    }
     lint { disable += setOf("OldTargetApi") }
 }
 kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }

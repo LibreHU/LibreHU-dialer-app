@@ -4,6 +4,8 @@ Application téléphone pour autoradios LibreHU (UJC201 / AC8257, Android 9), pe
 cibles tactiles, paysage, thème et accent synchronisés avec [LibreHU Launcher](https://github.com/LibreHU/LibreHU-Launcher-App).
 Inspirée de l'ergonomie d'Android Auto, sans en être un client ni reprendre ses éléments graphiques.
 
+Cette branche : **`librehu-service`** ([LibreHU-service](https://github.com/LibreHU/LibreHU-service), API Bluetooth 3).
+
 ## Fonctions
 
 - **Favoris** : contacts favoris du téléphone (sinon les numéros les plus appelés) et derniers appels.
