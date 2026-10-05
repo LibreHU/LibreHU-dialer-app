@@ -97,4 +97,5 @@
     <string name="jancar_connecting">Connecting to Jancar\'s Bluetooth service…</string>
     <string name="jancar_lost">Jancar\'s Bluetooth service stopped</string>
     <string name="jancar_missing">Jancar\'s Bluetooth service (com.jancar.btservice) is not installed</string>
+    <string name="phone_mismatch">Android sees the phone connected for calls, but the phone service (%1$s) does not: calls may fail. Check that it runs and follows Bluetooth.</string>
 </resources>
