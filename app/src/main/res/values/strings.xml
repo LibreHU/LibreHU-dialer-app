@@ -92,4 +92,6 @@
     <string name="widget_need_permission">Open the app and allow the call history</string>
     <string name="widget_shortcuts_description">Shortcuts to favourites, contacts, recent calls and keypad</string>
     <string name="widget_recent_calls_description">The latest calls of the phone</string>
+    <string name="watcher_title">Phone ready for calls</string>
+    <string name="watcher_channel">Phone call watcher</string>
 </resources>

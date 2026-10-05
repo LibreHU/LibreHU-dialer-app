@@ -16,6 +16,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import org.librehu.dialer.phone.CallWatcherService
 import org.librehu.dialer.phone.Phone
 import org.librehu.dialer.phone.PhoneBackend
 import org.librehu.dialer.phone.PhoneBackends
@@ -55,6 +56,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         phone = Phone.get(this)
+        CallWatcherService.start(this)
         themeFollower =
             ThemeFollower(this) { dark, accent ->
                 DialerColors.palette = DialerPalette.fromLauncher(dark, accent)
