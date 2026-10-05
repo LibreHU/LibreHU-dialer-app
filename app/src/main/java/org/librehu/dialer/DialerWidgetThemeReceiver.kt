@@ -5,7 +5,10 @@ import android.content.Context
 import android.content.Intent
 
 internal class DialerWidgetThemeReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         if (intent.action == "org.librehu.action.THEME_CHANGED") {
             DialerWidgetTheme.refreshAll(context)
         }

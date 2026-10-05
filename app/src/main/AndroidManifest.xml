@@ -1,31 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <queries>
         <provider android:authorities="org.librehu.launcher.theme" />
     </queries>
 
+    <!-- Contacts and call history downloaded from the phone (PBAP) into Android's providers. -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
-    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <!-- Outgoing calls through Telecom (TelecomManager.placeCall). -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <!-- Phone connected in Bluetooth (HFP client profile). -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <application android:allowBackup="false" android:label="@string/app_name" android:icon="@drawable/ic_dialer" android:theme="@style/Theme.LibreHU.Dialer" android:supportsRtl="true">
-        <activity android:name=".MainActivity" android:exported="true" android:screenOrientation="landscape" android:configChanges="orientation|screenSize|keyboardHidden|uiMode">
+    <!-- Floating call controls over other apps (user granted). -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@drawable/ic_dialer"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.LibreHU.Dialer">
+
+        <!-- DIAL filters: required to be offered as the default phone app. -->
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape"
+            android:showWhenLocked="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tel" />
+            </intent-filter>
         </activity>
-        <receiver android:name=".DialerShortcutsWidget" android:exported="true" android:label="Dialer shortcuts" android:permission="android.permission.BIND_APPWIDGET">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_dialer_shortcuts_info" />
+
+        <!-- Calls of the default phone app (Telecom, including the Bluetooth phone's calls). -->
+        <service
+            android:name=".phone.DialerInCallService"
+            android:exported="true"
+            android:permission="android.permission.BIND_INCALL_SERVICE">
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_UI"
+                android:value="true" />
+            <intent-filter>
+                <action android:name="android.telecom.InCallService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".CallBubbleService"
+            android:exported="false" />
+
+        <receiver
+            android:name=".DialerShortcutsWidget"
+            android:exported="true"
+            android:label="@string/widget_shortcuts_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_dialer_shortcuts_info" />
         </receiver>
-        <receiver android:name=".DialerRecentCallsWidget" android:exported="true" android:label="Recent calls" android:permission="android.permission.BIND_APPWIDGET">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_recent_calls_info" />
+        <receiver
+            android:name=".DialerRecentCallsWidget"
+            android:exported="true"
+            android:label="@string/tab_recents">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_recent_calls_info" />
         </receiver>
-        <receiver android:name=".DialerWidgetThemeReceiver" android:exported="true">
-            <intent-filter><action android:name="org.librehu.action.THEME_CHANGED" /></intent-filter>
+        <receiver
+            android:name=".DialerWidgetThemeReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.librehu.action.THEME_CHANGED" />
+            </intent-filter>
         </receiver>
     </application>
 </manifest>
