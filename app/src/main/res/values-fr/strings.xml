@@ -92,4 +92,6 @@
     <string name="widget_need_permission">Ouvrez l\'appli et autorisez le journal d\'appels</string>
     <string name="widget_shortcuts_description">Raccourcis vers les favoris, contacts, appels récents et le clavier</string>
     <string name="widget_recent_calls_description">Les derniers appels du téléphone</string>
+    <string name="watcher_title">Téléphone prêt pour les appels</string>
+    <string name="watcher_channel">Surveillance des appels</string>
 </resources>
