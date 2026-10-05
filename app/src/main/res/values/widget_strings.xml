@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="widget_shortcuts_description">Shortcuts to the dialer, contacts, recent calls and keypad</string>
-    <string name="widget_recent_calls_description">Shows the latest calls from this device</string>
-</resources>

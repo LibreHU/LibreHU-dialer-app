@@ -55,8 +55,16 @@ The HFP path involves Android's Bluetooth Headset Client / Telecom components, i
 
 **Important:** exact `IBluetooth` AIDL signatures and callback registration must be confirmed from the APK/decompiled source before implementing method calls. Method names alone are not enough to safely reconstruct Binder transaction codes.
 
-## UI target
+## Phone backends
 
-The current Compose prototype intentionally labels contacts and calls as demo data. It is not yet connected to Contacts Provider, call history or the Bluetooth service. The next implementation milestone is to validate the Binder contract, then replace the demo repository without redesigning the UI.
+`phone/PhoneModel.kt` defines `PhoneBackend` (link state, call list, dial / answer / reject / hang up / hold / swap /
+DTMF / mute / audio route). Each branch provides `phone/PhoneBackends.kt`:
+
+- `main`: `TelecomBackend` + `DialerInCallService` (the app is Android's default phone app; HFP client calls are
+  Telecom calls), phone link from the HFP client profile (BluetoothProfile 16).
+- `ivi`: `JancarBackend` over the `IBluetooth` Binder of `com.jancar.btservice`.
+- `librehu-service`: `LibreHuBackend` over `ILibreHuBluetooth`.
+
+The Compose screens only see `PhoneBackend`; contacts and call history always come from Android's providers.
 
 The goal is to reproduce Android Auto's familiar phone workflow (favorites, recents, contacts, keypad, and call controls) with LibreHU branding and large landscape touch targets. This is a native head-unit UI, not an Android Auto projection app and not an implementation of Google's Android for Cars App Library.
