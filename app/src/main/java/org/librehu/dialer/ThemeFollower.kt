@@ -23,27 +23,33 @@ internal class ThemeFollower(
     private val main = Handler(Looper.getMainLooper())
     private var started = false
 
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == ACTION_THEME_CHANGED) {
-                onChange(intent.getBooleanExtra("dark", true), intent.getIntExtra("accent", 0))
-            } else {
-                refresh()
+    private val receiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context,
+                intent: Intent,
+            ) {
+                if (intent.action == ACTION_THEME_CHANGED) {
+                    onChange(intent.getBooleanExtra("dark", true), intent.getIntExtra("accent", 0))
+                } else {
+                    refresh()
+                }
             }
         }
-    }
 
-    private val observer = object : ContentObserver(main) {
-        override fun onChange(selfChange: Boolean) = refresh()
-    }
+    private val observer =
+        object : ContentObserver(main) {
+            override fun onChange(selfChange: Boolean) = refresh()
+        }
 
     fun start() {
         if (started) return
         started = true
-        val filter = IntentFilter().apply {
-            addAction(ACTION_THEME_CHANGED)
-            addAction(Intent.ACTION_CONFIGURATION_CHANGED)
-        }
+        val filter =
+            IntentFilter().apply {
+                addAction(ACTION_THEME_CHANGED)
+                addAction(Intent.ACTION_CONFIGURATION_CHANGED)
+            }
         ContextCompat.registerReceiver(context, receiver, filter, ContextCompat.RECEIVER_EXPORTED)
         runCatching { context.contentResolver.registerContentObserver(THEME_URI, false, observer) }
         refresh()
@@ -59,21 +65,24 @@ internal class ThemeFollower(
     }
 
     private fun refresh() {
-        val launcherTheme = runCatching {
-            context.contentResolver.query(THEME_URI, null, null, null, null)?.use { cursor ->
-                if (cursor.moveToFirst()) (cursor.getInt(0) != 0) to cursor.getInt(1) else null
+        val launcherTheme =
+            runCatching {
+                context.contentResolver.query(THEME_URI, null, null, null, null)?.use { cursor ->
+                    if (cursor.moveToFirst()) (cursor.getInt(0) != 0) to cursor.getInt(1) else null
+                }
+            }.getOrNull()
+        val launcherDark =
+            launcherTheme?.first ?: run {
+                val night = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+                night != Configuration.UI_MODE_NIGHT_NO
             }
-        }.getOrNull()
-        val launcherDark = launcherTheme?.first ?: run {
-            val night = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-            night != Configuration.UI_MODE_NIGHT_NO
-        }
         val launcherAccent = launcherTheme?.second ?: 0
-        val effectiveDark = when (DialerPreferences.appTheme(context)) {
-            ThemeMode.AUTO -> launcherDark
-            ThemeMode.LIGHT -> false
-            ThemeMode.DARK -> true
-        }
+        val effectiveDark =
+            when (DialerPreferences.appTheme(context)) {
+                ThemeMode.AUTO -> launcherDark
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+            }
         onChange(effectiveDark, launcherAccent)
     }
 

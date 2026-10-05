@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [main, ivi, librehu-service]
+    branches: ["**"]
   pull_request:
     branches: [main]
   workflow_dispatch:

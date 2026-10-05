@@ -1,56 +1,62 @@
 # LibreHU Dialer
 
-An automotive phone UI for LibreHU head units, inspired by Android Auto's interaction patterns and visual hierarchy. It uses LibreHU's own visual identity; it is not an Android Auto client or a Google product.
+Application téléphone pour autoradios LibreHU (UJC201 / AC8257, Android 9), pensée pour la voiture : grandes
+cibles tactiles, paysage, thème et accent synchronisés avec [LibreHU Launcher](https://github.com/LibreHU/LibreHU-Launcher-App).
+Inspirée de l'ergonomie d'Android Auto, sans en être un client ni reprendre ses éléments graphiques.
 
-## Current status
+Cette branche : **`ivi`** (service Bluetooth Jancar de la ROM d'origine).
 
-**Early integration stage.** The `ivi` branch binds to the stock `com.jancar.btservice` Binder service and sends call, hang-up, answer/reject and microphone-mute commands. Contacts and recents are still demo data; live call-state integers have not yet been mapped, and this branch must be tested on the UJC201 before being treated as functional.
+## Fonctions
 
-### Included in the first scaffold
+- **Favoris** : contacts favoris du téléphone (sinon les numéros les plus appelés) et derniers appels.
+- **Récents** : journal d'appels (reçus, émis, manqués en rouge, refusés), regroupement des appels consécutifs,
+  filtre « Manqués ».
+- **Contacts** : répertoire avec photos, index alphabétique, recherche par nom ou numéro, choix du numéro quand un
+  contact en a plusieurs.
+- **Clavier** : grandes touches, appui long sur 0 pour « + », appui long sur effacer pour tout effacer, suggestions
+  de contacts pendant la saisie ; ouvre aussi les liens `tel:` et l'action `DIAL` des autres applis.
+- **Écran d'appel** : appel entrant (répondre / refuser, double appel), durée, micro coupé, clavier DTMF, mise en
+  attente, permutation entre deux appels, raccrocher ; réductible en barre au-dessus des listes.
+- **Commandes flottantes** pendant un appel, par-dessus les autres applis (navigation…) : nom, durée, micro,
+  raccrocher, déplaçables ; un toucher rouvre l'écran d'appel (autorisation « affichage par-dessus »).
+- **Widgets** : raccourcis et derniers appels, thème automatique.
+- Français et anglais.
 
-- Landscape-first, car-sized interface with high-contrast text and large touch targets.
-- Favorites, recent calls, contacts search and numeric keypad.
-- In-call command screen driven by Jancar callback events (raw status values until mapped).
-- Light / dark appearance and accent color synchronized with LibreHU Launcher.
-- Launcher-family app icon and Material icons using the active launcher accent.
-- Fallback to Android's current night mode when the launcher theme provider is unavailable.
-- Android 9 / API 28 minimum target and Jetpack Compose.
-- GitHub Actions build artifact for the debug APK.
+## Branches
 
-## Shared appearance
+| Branche | Moteur téléphone | Comment |
+|---|---|---|
+| `main` | **Android Telecom** | L'appli devient l'**appli téléphone par défaut** (Réglages → Téléphone). Les appels du téléphone Bluetooth sont des appels Telecom créés par le service HFP client d'Android (`com.android.bluetooth`) : l'`InCallService` de l'appli les reçoit, `TelecomManager.placeCall` les passe. |
+| `ivi` | **Jancar `ivi-btservice`** | Binder `com.jancar.btservice.bluetooth.IBluetooth` (ROM d'origine). Voir [docs/jancar-binder-contract.md](https://github.com/LibreHU/LibreHU-dialer-app/blob/ivi/docs/jancar-binder-contract.md) sur la branche `ivi`. |
+| `librehu-service` | **[LibreHU-service](https://github.com/LibreHU/LibreHU-service)** | API Bluetooth `ILibreHuBluetooth` (API 3) : appels, état du téléphone, audio voiture / téléphone. |
 
-The launcher on the `ivi` branch is the source of truth for the effective theme. Its read-only provider, `content://org.librehu.launcher.theme/theme`, exposes `dark` and the effective accent ARGB; it also sends `org.librehu.action.THEME_CHANGED` broadcasts. The dialer observes both, so it follows automatic day/night changes (including the launcher's headlight/time logic) and user-selected launcher accents without duplicating that logic. When the provider is unavailable, the dialer follows Android's current night configuration and a standard blue accent.
-
-The palette follows the shared LibreHU car palette: black / graphite surfaces in dark mode, light grey / white surfaces in light mode, Google-style high contrast text, and the launcher's current accent. The dialer does not try to change system-wide night mode itself.
+Seuls `phone/PhoneBackends.kt`, le moteur et le manifeste diffèrent entre branches : l'interface reste commune
+(`phone/PhoneModel.kt`).
 
 ## Architecture
 
-Keep UI state independent of the phone transport. Proposed layers:
-
-- `ui/`: Compose screens and car-sized reusable components.
-- `contacts/`: Contacts Provider access, permissions and normalized contacts.
-- `history/`: Call log access where the Android build grants it.
-- `telecom/`: real call control and call state.
-- `bluetooth/`: device discovery / connection status only if the head-unit Bluetooth stack exposes a supported API.
-- `headunit/`: optional LibreHU-service integration; do not use it as a substitute for HFP/Telecom.
-
-Do not assume that Android's public `BluetoothHeadset` APIs control a Bluetooth phone connected to the head unit. On the UJC201, the stock `com.jancar.btservice.bluetooth.BluetoothService` is exported and exposes the `com.jancar.btservice.action.bluetooth` binding action. The `ivi` branch binds to this service and uses verified Binder transaction IDs for a small initial command set. It intentionally displays raw call/connection status codes until their meanings are confirmed on-device. Avoid private API guesses and never open the MCU UART from the dialer.
-
-## Next milestones
-
-1. Validate service binding and command behavior on the stock UJC201.
-2. Map the live `IBluetoothCallback` call/connection status values against the original Jancar UI.
-3. Verify outgoing, answer, reject, hang-up and microphone-mute commands with a paired phone.
-4. Replace demo contacts with the Jancar phonebook API/provider after confirming its data format and access rules.
-5. Add real call history and recovery after service disconnects.
-6. Add regression tests for disconnects, missed calls, rotation and display sizes.
-
-## Build
-
-Requires JDK 17 and Android SDK platform/build tools for API 37. GitHub Actions runs:
-
-```sh
-gradle assembleDebug
+```
+org.librehu.dialer
+├── MainActivity.kt        intents (tel:, DIAL, onglet, écran d'appel), autorisations, appli par défaut
+├── CallBubble.kt          commandes flottantes (fenêtre superposée)
+├── phone/                 PhoneBackend (interface), moteur de la branche, Phone (instance partagée)
+├── data/PhoneBook.kt      contacts, journal, favoris, recherche de nom (fournisseurs Android)
+├── ui/                    écrans Compose (onglets, appel, réglages), thème partagé avec le launcher
+├── DialerWidgets.kt       widgets
+└── ThemeFollower.kt       thème du launcher (content://org.librehu.launcher.theme/theme + THEME_CHANGED)
 ```
 
-The workflow uploads `LibreHU-Dialer-debug`. No release APK is published yet.
+Contacts et journal : sur l'autoradio, le client PBAP d'Android télécharge le répertoire et l'historique du
+téléphone dans les fournisseurs `ContactsContract` / `CallLog` (ce que relisent aussi `ivi-btservice` et
+LibreHU-service) : l'appli les lit directement.
+
+Règles :
+
+- Ne jamais ouvrir l'UART de la MCU (`/dev/ttyS1`) : LibreHU-service en est le seul propriétaire.
+- Afficher honnêtement les états « non connecté » / « indisponible » ; ne jamais simuler un appel.
+
+## Compilation
+
+JDK 17, SDK Android API 37. GitHub Actions : `gradle assembleDebug`, artefact `LibreHU-Dialer-debug`.
+
+Non testé sur l'autoradio à ce stade.
