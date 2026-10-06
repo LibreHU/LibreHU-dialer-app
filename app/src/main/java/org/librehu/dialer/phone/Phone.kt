@@ -15,6 +15,9 @@ object Phone {
     @Volatile
     private var instance: PhoneBackend? = null
 
+    /** Network indicators of the phone (signal, operator, battery), from Android's HFP client. */
+    fun network(context: Context): StateFlow<HfpState> = (get(context) as CheckedBackend).hfpState
+
     fun get(context: Context): PhoneBackend =
         instance ?: synchronized(this) {
             instance ?: CheckedBackend(PhoneBackends.create(context.applicationContext), HfpWatcher(context.applicationContext)).also {
