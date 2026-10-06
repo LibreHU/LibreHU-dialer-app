@@ -11,7 +11,7 @@
         android:orientation="horizontal" android:gravity="center_vertical"
         android:padding="12dp" android:background="@drawable/widget_card_dark">
 
-        <View android:id="@+id/widget_recent_accent_bar"
+        <FrameLayout android:id="@+id/widget_recent_accent_bar"
             android:layout_width="5dp" android:layout_height="42dp"
             android:layout_marginEnd="12dp" android:background="#8AB4F8" />
 
@@ -28,7 +28,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <Space android:layout_width="match_parent" android:layout_height="8dp" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="8dp" />
 
     <TextView android:id="@+id/widget_recent_line1"
         android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
@@ -37,7 +37,7 @@
         android:maxLines="1" android:ellipsize="end"
         android:background="@drawable/widget_chip_dark" />
 
-    <Space android:layout_width="match_parent" android:layout_height="5dp" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="5dp" />
 
     <TextView android:id="@+id/widget_recent_line2"
         android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
@@ -46,7 +46,7 @@
         android:maxLines="1" android:ellipsize="end"
         android:background="@drawable/widget_chip_dark" />
 
-    <Space android:layout_width="match_parent" android:layout_height="5dp" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="5dp" />
 
     <TextView android:id="@+id/widget_recent_line3"
         android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
@@ -55,7 +55,7 @@
         android:maxLines="1" android:ellipsize="end"
         android:background="@drawable/widget_chip_dark" />
 
-    <Space android:layout_width="match_parent" android:layout_height="7dp" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="7dp" />
 
     <TextView android:id="@+id/widget_recent_open"
         android:layout_width="match_parent" android:layout_height="42dp"

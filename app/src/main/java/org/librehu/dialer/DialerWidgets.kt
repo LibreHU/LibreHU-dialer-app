@@ -60,6 +60,7 @@ internal object DialerWidgetTheme {
         val recent = manager.getAppWidgetIds(ComponentName(context, DialerRecentCallsWidget::class.java))
         DialerShortcutsWidget().onUpdate(context, manager, shortcuts)
         DialerRecentCallsWidget().let { provider -> recent.forEach { provider.updateOnePublic(context, manager, it) } }
+        DialerKeypadWidget.refresh(context)
     }
 }
 
