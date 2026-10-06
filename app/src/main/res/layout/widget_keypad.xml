@@ -78,7 +78,7 @@
             android:orientation="horizontal">
             <TextView android:id="@+id/widget_keypad_kstar"
                 android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
-                android:layout_margin="3dp" android:gravity="center" android:text="&&#35;42;"
+                android:layout_margin="3dp" android:gravity="center" android:text="*"
                 android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
             <TextView android:id="@+id/widget_keypad_k0"
                 android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
@@ -86,7 +86,7 @@
                 android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
             <TextView android:id="@+id/widget_keypad_khash"
                 android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
-                android:layout_margin="3dp" android:gravity="center" android:text="&#35;"
+                android:layout_margin="3dp" android:gravity="center" android:text="#"
                 android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
         </LinearLayout>
     </LinearLayout>
