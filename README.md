@@ -14,7 +14,8 @@ Cette branche : **`ivi`** (service Bluetooth Jancar de la ROM d'origine).
 - **Contacts** : répertoire avec photos, index alphabétique, recherche par nom ou numéro, choix du numéro quand un
   contact en a plusieurs.
 - **Clavier** : grandes touches, appui long sur 0 pour « + », appui long sur effacer pour tout effacer, suggestions
-  de contacts pendant la saisie ; ouvre aussi les liens `tel:` et l'action `DIAL` des autres applis.
+  de contacts pendant la saisie, par numéro ou par **recherche T9** (5-3-6 trouve « Jean » : début du nom, début
+  d'un mot, puis initiales ; 4 suggestions) ; ouvre aussi les liens `tel:` et l'action `DIAL` des autres applis.
 - **Écran d'appel** : appel entrant (répondre / refuser, double appel), durée, micro coupé, clavier DTMF, mise en
   attente, permutation entre deux appels, raccrocher ; réductible en barre au-dessus des listes.
 - **Commandes flottantes** pendant un appel, par-dessus les autres applis (navigation…) : nom, durée, micro,
@@ -23,7 +24,8 @@ Cette branche : **`ivi`** (service Bluetooth Jancar de la ROM d'origine).
   lieu de l'écran d'appel complet, aux couleurs du launcher ; devient les commandes flottantes une fois décroché.
 - **En-tête** : réseau du téléphone (barres, opérateur, itinérance, « Pas de service », batterie) lu sur le profil
   HFP, à la place de l'heure.
-- **Widgets** : raccourcis et derniers appels, thème automatique.
+- **Widgets** : raccourcis (favoris), derniers appels et **clavier** (12 touches, effacer, appeler : l'appel
+  passe par l'appli), thème et couleur d'accent du launcher.
 - Français et anglais.
 
 ## Branches
@@ -45,8 +47,10 @@ org.librehu.dialer
 ├── CallBubble.kt          commandes flottantes (fenêtre superposée)
 ├── phone/                 PhoneBackend (interface), moteur de la branche, Phone (instance partagée)
 ├── data/PhoneBook.kt      contacts, journal, favoris, recherche de nom (fournisseurs Android)
+├── data/T9.kt            recherche T9 (nom → chiffres, score début de nom / de mot / initiales)
 ├── ui/                    écrans Compose (onglets, appel, réglages), thème partagé avec le launcher
-├── DialerWidgets.kt       widgets
+├── DialerWidgets.kt       widgets raccourcis et derniers appels
+├── DialerKeypadWidget.kt  widget clavier (numéro par widget, appel via MainActivity)
 └── ThemeFollower.kt       thème du launcher (content://org.librehu.launcher.theme/theme + THEME_CHANGED)
 ```
 
