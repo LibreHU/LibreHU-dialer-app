@@ -11,7 +11,7 @@
         android:orientation="horizontal" android:gravity="center_vertical"
         android:padding="12dp" android:background="@drawable/widget_card_dark">
 
-        <View android:id="@+id/widget_accent_bar"
+        <FrameLayout android:id="@+id/widget_accent_bar"
             android:layout_width="5dp" android:layout_height="42dp"
             android:layout_marginEnd="12dp" android:background="#8AB4F8" />
 
@@ -29,7 +29,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <Space android:layout_width="match_parent" android:layout_height="8dp" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="8dp" />
 
     <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
         android:layout_weight="1" android:orientation="horizontal">
@@ -47,7 +47,7 @@
             android:background="@drawable/widget_chip_dark" />
     </LinearLayout>
 
-    <Space android:layout_width="match_parent" android:layout_height="8dp" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="8dp" />
 
     <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
         android:layout_weight="1" android:orientation="horizontal">
