@@ -100,4 +100,9 @@
     <string name="no_service">Pas de service</string>
     <string name="incoming_overlay">Appel entrant par-dessus les applis</string>
     <string name="incoming_overlay_hint">Une carte Répondre / Refuser par-dessus l\'appli en cours (la navigation reste visible) au lieu de l\'écran d\'appel complet. Demande « Superposition sur d\'autres applis ».</string>
+    <string name="widget_keypad_label">Clavier téléphone</string>
+    <string name="widget_keypad_description">Clavier : composer un numéro et appeler</string>
+    <string name="widget_keypad_hint">Numéro</string>
+    <string name="widget_keypad_delete">Effacer</string>
+    <string name="widget_keypad_call">Appeler</string>
 </resources>
