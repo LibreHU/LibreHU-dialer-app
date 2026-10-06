@@ -105,4 +105,9 @@
     <string name="no_service">No service</string>
     <string name="incoming_overlay">Incoming call over the apps</string>
     <string name="incoming_overlay_hint">A card with answer / decline over the current app (navigation stays visible) instead of the full call screen. Needs "Display over other apps".</string>
+    <string name="widget_keypad_label">Dial pad</string>
+    <string name="widget_keypad_description">Dial pad: type a number and call</string>
+    <string name="widget_keypad_hint">Number</string>
+    <string name="widget_keypad_delete">Delete</string>
+    <string name="widget_keypad_call">Call</string>
 </resources>
