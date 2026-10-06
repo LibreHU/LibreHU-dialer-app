@@ -100,4 +100,9 @@
     <string name="librehu_too_old">LibreHU-service is too old: Bluetooth API 3 needed</string>
     <string name="librehu_bt_off">Bluetooth is off</string>
     <string name="phone_mismatch">Android sees the phone connected for calls, but the phone service (%1$s) does not: calls may fail. Check that it runs and follows Bluetooth.</string>
+    <string name="call_decline">Decline</string>
+    <string name="incoming_waiting">Second call</string>
+    <string name="no_service">No service</string>
+    <string name="incoming_overlay">Incoming call over the apps</string>
+    <string name="incoming_overlay_hint">A card with answer / decline over the current app (navigation stays visible) instead of the full call screen. Needs "Display over other apps".</string>
 </resources>

@@ -37,6 +37,7 @@ internal object DialerPreferences {
     private const val WIDGET_SHOW_RECENTS = "widget_show_recents"
     private const val CALL_BUBBLE = "call_bubble"
     private const val OPEN_ON_CALL = "open_on_call"
+    private const val INCOMING_OVERLAY = "incoming_overlay"
 
     private fun prefs(context: Context) = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
@@ -53,6 +54,14 @@ internal object DialerPreferences {
 
     /** Bring the call screen up on incoming / outgoing calls (backends that are not Telecom). */
     fun openOnCall(context: Context): Boolean = prefs(context).getBoolean(OPEN_ON_CALL, true)
+
+    /** Incoming call as a card over the current app (Android Auto style) instead of the full call screen. */
+    fun incomingOverlay(context: Context): Boolean = prefs(context).getBoolean(INCOMING_OVERLAY, true)
+
+    fun setIncomingOverlay(
+        context: Context,
+        value: Boolean,
+    ) = prefs(context).edit().putBoolean(INCOMING_OVERLAY, value).apply()
 
     fun setAppTheme(
         context: Context,

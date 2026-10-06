@@ -100,4 +100,9 @@
     <string name="librehu_too_old">LibreHU-service trop ancien : API Bluetooth 3 nécessaire</string>
     <string name="librehu_bt_off">Le Bluetooth est désactivé</string>
     <string name="phone_mismatch">Android voit le téléphone connecté pour les appels, mais le service téléphone (%1$s) non : les appels peuvent échouer. Vérifiez qu\'il tourne et suit le Bluetooth.</string>
+    <string name="call_decline">Refuser</string>
+    <string name="incoming_waiting">Deuxième appel</string>
+    <string name="no_service">Pas de service</string>
+    <string name="incoming_overlay">Appel entrant par-dessus les applis</string>
+    <string name="incoming_overlay_hint">Une carte Répondre / Refuser par-dessus l\'appli en cours (la navigation reste visible) au lieu de l\'écran d\'appel complet. Demande « Superposition sur d\'autres applis ».</string>
 </resources>
