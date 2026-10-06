@@ -123,6 +123,10 @@ class MainActivity : ComponentActivity() {
         intent ?: return
         Tab.parse(intent.getStringExtra(EXTRA_OPEN_TAB))?.let { state.tab.value = it }
         if (intent.getBooleanExtra(EXTRA_SHOW_CALL, false)) state.showCall.value++
+        intent.getStringExtra(EXTRA_CALL_NUMBER)?.let {
+            intent.removeExtra(EXTRA_CALL_NUMBER)
+            dial(it)
+        }
         val data = intent.data
         if ((intent.action == Intent.ACTION_DIAL || intent.action == Intent.ACTION_VIEW) && data?.scheme == "tel") {
             state.number.value = data.schemeSpecificPart.orEmpty()
@@ -179,6 +183,9 @@ class MainActivity : ComponentActivity() {
 
         /** Brings the call screen up. */
         const val EXTRA_SHOW_CALL = "org.librehu.dialer.extra.SHOW_CALL"
+
+        /** Number to call at once (dial pad widget). */
+        const val EXTRA_CALL_NUMBER = "org.librehu.dialer.extra.CALL_NUMBER"
         private const val STATE_TAB = "tab"
 
         /** The activity is on screen (the call bubble and the backends check it). */
