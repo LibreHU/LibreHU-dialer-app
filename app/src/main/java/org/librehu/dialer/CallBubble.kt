@@ -30,6 +30,7 @@ import org.librehu.dialer.phone.CallStatus
 import org.librehu.dialer.phone.Phone
 import org.librehu.dialer.phone.PhoneCall
 import org.librehu.dialer.ui.DialerColors
+import org.librehu.dialer.ui.DialerPalette
 import org.librehu.dialer.ui.primaryCall
 import kotlin.math.abs
 
@@ -93,6 +94,8 @@ class CallBubbleService : Service() {
     override fun onCreate() {
         super.onCreate()
         wm = getSystemService(WindowManager::class.java)
+        // Colours of the launcher theme, even when the dialer screen never opened since boot.
+        ThemeFollower(this) { dark, accent -> DialerColors.palette = DialerPalette.fromLauncher(dark, accent) }.refreshNow()
         val phone = Phone.get(this)
         job =
             scope.launch {

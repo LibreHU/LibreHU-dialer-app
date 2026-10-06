@@ -17,6 +17,10 @@ Inspirée de l'ergonomie d'Android Auto, sans en être un client ni reprendre se
   attente, permutation entre deux appels, raccrocher ; réductible en barre au-dessus des listes.
 - **Commandes flottantes** pendant un appel, par-dessus les autres applis (navigation…) : nom, durée, micro,
   raccrocher, déplaçables ; un toucher rouvre l'écran d'appel (autorisation « affichage par-dessus »).
+- **Appel entrant par-dessus les applis** : carte façon Android Auto (initiale, nom, numéro, Refuser / Répondre) au
+  lieu de l'écran d'appel complet, aux couleurs du launcher ; devient les commandes flottantes une fois décroché.
+- **En-tête** : réseau du téléphone (barres, opérateur, itinérance, « Pas de service », batterie) lu sur le profil
+  HFP, à la place de l'heure.
 - **Widgets** : raccourcis et derniers appels, thème automatique.
 - Français et anglais.
 
