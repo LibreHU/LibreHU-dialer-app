@@ -53,6 +53,7 @@ class CallBubbleService : Service() {
     private var root: LinearLayout? = null
     private var title: TextView? = null
     private var mute: TextView? = null
+    private var answer: TextView? = null
     private var params: WindowManager.LayoutParams? = null
     private var call: PhoneCall? = null
     private var name = ""
@@ -161,7 +162,13 @@ class CallBubbleService : Service() {
             button(getString(R.string.call_end), 0xFFD93025.toInt()) {
                 call?.let { c -> if (c.status.incoming) phone.reject(c) else phone.hangup(c) }
             }
+        // Incoming call: answer from the bubble too (the mute button makes no sense yet).
+        val a =
+            button(getString(R.string.call_answer), 0xFF1E8E3E.toInt()) {
+                call?.let { c -> if (c.status.incoming) phone.answer(c) }
+            }
         panel.addView(t)
+        panel.addView(a)
         panel.addView(m)
         panel.addView(View(this), LinearLayout.LayoutParams(dp(8), 1))
         panel.addView(end)
@@ -220,6 +227,7 @@ class CallBubbleService : Service() {
         root = panel
         title = t
         mute = m
+        answer = a
         params = lp
     }
 
@@ -251,5 +259,7 @@ class CallBubbleService : Service() {
             }
         title?.text = "$who · $status"
         mute?.text = getString(if (muted) R.string.call_unmute else R.string.call_mute)
+        answer?.visibility = if (c.status.incoming) View.VISIBLE else View.GONE
+        mute?.visibility = if (c.status.incoming) View.GONE else View.VISIBLE
     }
 }
