@@ -56,6 +56,7 @@ import org.librehu.dialer.data.Contact
 import org.librehu.dialer.data.PhoneBook
 import org.librehu.dialer.data.RecentCall
 import org.librehu.dialer.data.RecentType
+import org.librehu.dialer.data.T9
 import org.librehu.dialer.data.initialsFor
 
 /** Message and button shown instead of a list when a permission is missing. */
@@ -377,6 +378,8 @@ fun NumberPicker(
 
 // --- Keypad ------------------------------------------------------------------------------------------------------
 
+private const val MAX_MATCHES = 4
+
 val KEYS =
     listOf(
         listOf("1" to "", "2" to "ABC", "3" to "DEF"),
@@ -427,11 +430,24 @@ fun KeypadScreen(
     onDial: (String) -> Unit,
 ) {
     val digits = PhoneBook.normalize(number)
+    // Number containing the digits (3 or more), or the name spelt on the keys (T9).
     val matches =
-        if (digits.length < 3) {
+        if (digits.isEmpty()) {
             emptyList()
         } else {
-            contacts.mapNotNull { c -> c.numbers.firstOrNull { PhoneBook.normalize(it.number).contains(digits) }?.let { c to it } }.take(3)
+            contacts
+                .mapNotNull { c ->
+                    val byNumber =
+                        if (digits.length >= 3) c.numbers.firstOrNull { PhoneBook.normalize(it.number).contains(digits) } else null
+                    val t9 = T9.score(c.name, digits)
+                    when {
+                        t9 > 0 -> Triple(c, c.primary, t9 + 10)
+                        byNumber != null -> Triple(c, byNumber, 5)
+                        else -> null
+                    }
+                }.sortedByDescending { it.third }
+                .take(MAX_MATCHES)
+                .map { it.first to it.second }
         }
     Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(22.dp)) {
         Column(Modifier.weight(0.9f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
