@@ -75,6 +75,7 @@ fun SettingsScreen(
     var widgetDetails by remember { mutableStateOf(DialerPreferences.widgetShowRecents(context)) }
     var bubble by remember { mutableStateOf(DialerPreferences.callBubble(context)) }
     var openOnCall by remember { mutableStateOf(DialerPreferences.openOnCall(context)) }
+    var incomingOverlay by remember { mutableStateOf(DialerPreferences.incomingOverlay(context)) }
     // Re-read permissions and default app when coming back from Android's screens.
     var resumed by remember { mutableIntStateOf(0) }
     LifecycleResumeEffect(Unit) {
@@ -127,6 +128,11 @@ fun SettingsScreen(
                         openOnCall = it
                         DialerPreferences.setOpenOnCall(context, it)
                     }
+                }
+                SwitchLine(stringResource(R.string.incoming_overlay), stringResource(R.string.incoming_overlay_hint), incomingOverlay) {
+                    incomingOverlay = it
+                    DialerPreferences.setIncomingOverlay(context, it)
+                    if (it && !Settings.canDrawOverlays(context)) actions.openOverlaySettings()
                 }
                 SwitchLine(stringResource(R.string.call_bubble), stringResource(R.string.call_bubble_hint), bubble) {
                     bubble = it

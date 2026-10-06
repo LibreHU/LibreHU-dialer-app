@@ -41,7 +41,11 @@ class CallWatcherService : Service() {
                 seen.retainAll(live.map { it.id }.toSet())
                 fresh.forEach { seen += it.id }
                 if (MainActivity.visible) return@collect
-                if (fresh.isNotEmpty() && DialerPreferences.openOnCall(this@CallWatcherService)) {
+                val ringing = live.any { it.status.incoming }
+                if (ringing && CallBubble.wanted(this@CallWatcherService, incoming = true)) {
+                    // Incoming call: a card over the current app (navigation stays visible), not the full screen.
+                    CallBubble.show(this@CallWatcherService, incoming = true)
+                } else if (fresh.isNotEmpty() && DialerPreferences.openOnCall(this@CallWatcherService)) {
                     startActivity(
                         Intent(this@CallWatcherService, MainActivity::class.java)
                             .putExtra(MainActivity.EXTRA_SHOW_CALL, true)

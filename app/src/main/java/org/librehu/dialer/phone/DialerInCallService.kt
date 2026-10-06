@@ -4,6 +4,7 @@ import android.content.Intent
 import android.telecom.Call
 import android.telecom.CallAudioState
 import android.telecom.InCallService
+import org.librehu.dialer.CallBubble
 import org.librehu.dialer.MainActivity
 
 /**
@@ -24,6 +25,13 @@ class DialerInCallService : InCallService() {
 
     override fun onCallAdded(call: Call) {
         TelecomCalls.add(call)
+        @Suppress("DEPRECATION")
+        val ringing = call.state == Call.STATE_RINGING
+        // Incoming call: a card over the current app (navigation stays visible), not the full screen.
+        if (ringing && !MainActivity.visible && CallBubble.wanted(this, incoming = true)) {
+            CallBubble.show(this, incoming = true)
+            return
+        }
         startActivity(
             Intent(this, MainActivity::class.java)
                 .putExtra(MainActivity.EXTRA_SHOW_CALL, true)

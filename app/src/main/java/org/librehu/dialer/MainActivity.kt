@@ -110,7 +110,7 @@ class MainActivity : ComponentActivity() {
     override fun onStop() {
         visible = false
         themeFollower.stop()
-        if (phone.calls.value.any { it.status.live }) CallBubble.show(this)
+        if (phone.calls.value.any { it.status.live }) CallBubble.show(this, incoming = phone.calls.value.any { it.status.incoming })
         super.onStop()
     }
 
