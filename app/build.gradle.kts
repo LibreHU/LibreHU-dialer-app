@@ -39,6 +39,12 @@ android {
 
     buildTypes {
         getByName("debug") { signingConfig = signingConfigs.getByName("librehu") }
+        // What the CI publishes: not debuggable, so that ART compiles it fully (Compose is much slower in a debug
+        // build). No R8: reflection on hidden APIs and AIDL stay as they are.
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("librehu")
+            isMinifyEnabled = false
+        }
     }
 
     compileOptions {
@@ -50,7 +56,10 @@ android {
         // LibreHU-service API (app/src/main/aidl, copied from LibreHU/LibreHU-service).
         aidl = true
     }
-    lint { disable += setOf("OldTargetApi") }
+    lint {
+        disable += setOf("OldTargetApi")
+        checkReleaseBuilds = false
+    }
 }
 kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
 dependencies {
