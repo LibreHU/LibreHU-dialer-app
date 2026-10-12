@@ -6,6 +6,16 @@ Inspirée de l'ergonomie d'Android Auto, sans en être un client ni reprendre se
 
 Cette branche : **`librehu-service`** ([LibreHU-service](https://github.com/LibreHU/LibreHU-service), API Bluetooth 3).
 
+## Captures d'écran
+
+| | |
+|---|---|
+| ![Favoris](docs/screenshots/favorites.png)<br>Favoris | ![Récents](docs/screenshots/recents.png)<br>Récents |
+| ![Contacts](docs/screenshots/contacts.png)<br>Contacts | ![Clavier](docs/screenshots/keypad.png)<br>Clavier |
+| ![Réglages](docs/screenshots/settings.png)<br>Réglages |  |
+
+Captures sur l'émulateur Android 9 (1280×720, 160 dpi comme l'autoradio), sans autoradio branché : les valeurs du véhicule et de la MCU sont vides. Refaites-les avec l'action **Screenshots** de [LibreHU-OTA-app](https://github.com/LibreHU/LibreHU-OTA-app/tree/main/screenshots).
+
 ## Fonctions
 
 - **Favoris** : contacts favoris du téléphone (sinon les numéros les plus appelés) et derniers appels.
