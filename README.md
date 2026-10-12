@@ -65,6 +65,7 @@ Règles :
 
 ## Compilation
 
-JDK 17, SDK Android API 37. GitHub Actions : `gradle assembleDebug`, artefact `LibreHU-Dialer-debug`.
+JDK 17, SDK Android API 37. GitHub Actions : `gradle assembleRelease`, artefact `LibreHU-Dialer` et release `latest-<branche>` (installable avec
+[LibreHU Apps (OTA)](https://github.com/LibreHU/LibreHU-OTA-app)).
 
 Non testé sur l'autoradio à ce stade.

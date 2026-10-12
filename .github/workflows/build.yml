@@ -42,11 +42,11 @@ jobs:
           fi
 
       - name: Build debug APK
-        run: gradle --no-daemon --stacktrace assembleDebug
+        run: gradle --no-daemon --stacktrace assembleRelease
       - uses: actions/upload-artifact@v4
         with:
-          name: LibreHU-Dialer-debug
-          path: app/build/outputs/apk/debug/*.apk
+          name: LibreHU-Dialer
+          path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 
       - name: Rolling release of the branch (LibreHU OTA)
@@ -61,7 +61,7 @@ jobs:
           SLUG="${BRANCH//\//-}"
           TAG="latest-$SLUG"
           OUT="$APP-$SLUG.apk"
-          cp "$(ls app/build/outputs/apk/debug/*.apk | head -n1)" "$OUT"
+          cp "$(ls app/build/outputs/apk/release/*.apk | head -n1)" "$OUT"
           CODE=$(git rev-list --count HEAD)
           NAME=$(git describe --tags --always --exclude 'latest-*')
           printf 'versionCode=%s\nversionName=%s\nbranch=%s\ncommit=%s\n\n%s\n' \
