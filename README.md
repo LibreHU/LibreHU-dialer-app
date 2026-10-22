@@ -77,3 +77,12 @@ JDK 17, SDK Android API 37. GitHub Actions : `gradle assembleRelease`, artefact 
 [LibreHU Apps (OTA)](https://github.com/LibreHU/LibreHU-OTA-app)).
 
 Non testé sur l'autoradio à ce stade.
+
+## Optimisation (R8)
+
+L'APK publié par la CI (`assembleRelease`) est **optimisé par R8** : code et ressources réduits et optimisés, ce qui
+rend Jetpack Compose nettement plus fluide ([Compose performance](https://developer.android.com/develop/ui/compose/performance)),
+**sans renommage** (`-dontobfuscate` dans `app/proguard-rules.pro`) : les traces des journaux restent lisibles. Les
+règles gardent aussi ce qui n'est appelé que par son nom (méthodes natives, helpers root lancés par `app_process`). Si
+une fonction plante avec « class / method not found », regarder `usage.txt` dans l'artefact *R8 reports* de la CI (ce
+que R8 a retiré) et ajouter une règle `-keep`.
