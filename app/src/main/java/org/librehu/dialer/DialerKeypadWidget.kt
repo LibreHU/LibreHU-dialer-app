@@ -6,7 +6,8 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.widget.RemoteViews
+import org.librehu.dialer.ui.RetroLook
+import org.librehu.dialer.ui.SegmentViews
 
 /** Dial pad on the home screen: the number is kept per widget; "Call" hands it to LibreHU Dialer. */
 class DialerKeypadWidget : AppWidgetProvider() {
@@ -130,24 +131,24 @@ class DialerKeypadWidget : AppWidgetProvider() {
             id: Int,
         ) {
             val theme = DialerWidgetTheme.resolve(context)
-            val primary = if (theme.dark) 0xFFE8EAED.toInt() else 0xFF202124.toInt()
+            val primary = theme.primary
             val number = prefs(context).getString(key(id), "").orEmpty()
             val views =
-                RemoteViews(context.packageName, R.layout.widget_keypad).apply {
-                    setInt(R.id.widget_keypad_root, "setBackgroundResource", theme.backgroundRes)
-                    setInt(R.id.widget_keypad_card, "setBackgroundResource", theme.cardRes)
+                SegmentViews(context, R.layout.widget_keypad, RetroLook.segment).apply {
+                    theme.background(this, R.id.widget_keypad_root)
+                    theme.card(this, R.id.widget_keypad_card)
                     setInt(R.id.widget_keypad_accent_bar, "setBackgroundColor", theme.accent)
                     setTextViewText(R.id.widget_keypad_number, number)
                     setTextColor(R.id.widget_keypad_number, primary)
                     KEYS.forEachIndexed { i, (k, view) ->
-                        setInt(view, "setBackgroundResource", theme.chipRes)
+                        theme.chip(this, view)
                         setTextColor(view, primary)
                         setOnClickPendingIntent(view, pending(context, id, ACTION_KEY, i, k))
                     }
-                    setInt(R.id.widget_keypad_delete, "setBackgroundResource", theme.chipRes)
+                    theme.chip(this, R.id.widget_keypad_delete)
                     setTextColor(R.id.widget_keypad_delete, primary)
                     setOnClickPendingIntent(R.id.widget_keypad_delete, pending(context, id, ACTION_DELETE, 20))
-                    setInt(R.id.widget_keypad_call, "setBackgroundResource", theme.chipRes)
+                    theme.chip(this, R.id.widget_keypad_call)
                     setTextColor(R.id.widget_keypad_call, theme.accent)
                     setOnClickPendingIntent(R.id.widget_keypad_call, pending(context, id, ACTION_CALL, 21))
                 }
