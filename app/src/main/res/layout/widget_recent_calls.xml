@@ -21,10 +21,31 @@
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:text="@string/tab_recents" android:textColor="#E8EAED"
                 android:textSize="17sp" android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/widget_recent_title_seg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:importantForAccessibility="no"
+                android:scaleType="fitStart"
+                android:visibility="gone" />
+
             <TextView android:id="@+id/widget_recent_summary"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:text="@string/widget_latest" android:textColor="#9AA0A6"
                 android:textSize="11sp" android:layout_marginTop="2dp" />
+
+            <ImageView
+                android:id="@+id/widget_recent_summary_seg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:adjustViewBounds="true"
+                android:importantForAccessibility="no"
+                android:scaleType="fitStart"
+                android:visibility="gone" />
+
         </LinearLayout>
     </LinearLayout>
 
@@ -37,6 +58,18 @@
         android:maxLines="1" android:ellipsize="end"
         android:background="@drawable/widget_chip_dark" />
 
+    <ImageView
+        android:id="@+id/widget_recent_line1_seg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="11dp"
+        android:background="@drawable/widget_chip_dark"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:scaleType="centerInside"
+        android:visibility="gone" />
+
     <FrameLayout android:layout_width="match_parent" android:layout_height="5dp" />
 
     <TextView android:id="@+id/widget_recent_line2"
@@ -45,6 +78,18 @@
         android:textColor="#E8EAED" android:textSize="12sp"
         android:maxLines="1" android:ellipsize="end"
         android:background="@drawable/widget_chip_dark" />
+
+    <ImageView
+        android:id="@+id/widget_recent_line2_seg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="11dp"
+        android:background="@drawable/widget_chip_dark"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:scaleType="centerInside"
+        android:visibility="gone" />
 
     <FrameLayout android:layout_width="match_parent" android:layout_height="5dp" />
 
@@ -55,6 +100,18 @@
         android:maxLines="1" android:ellipsize="end"
         android:background="@drawable/widget_chip_dark" />
 
+    <ImageView
+        android:id="@+id/widget_recent_line3_seg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="11dp"
+        android:background="@drawable/widget_chip_dark"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:scaleType="centerInside"
+        android:visibility="gone" />
+
     <FrameLayout android:layout_width="match_parent" android:layout_height="7dp" />
 
     <TextView android:id="@+id/widget_recent_open"
@@ -62,4 +119,15 @@
         android:gravity="center" android:text="@string/widget_open_history"
         android:textColor="#E8EAED" android:textStyle="bold" android:textSize="12sp"
         android:background="@drawable/widget_chip_dark" />
+
+    <ImageView
+        android:id="@+id/widget_recent_open_seg"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:background="@drawable/widget_chip_dark"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:scaleType="centerInside"
+        android:visibility="gone" />
+
 </LinearLayout>
