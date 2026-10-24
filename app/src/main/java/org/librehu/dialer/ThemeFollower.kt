@@ -30,6 +30,7 @@ internal class ThemeFollower(
                 intent: Intent,
             ) {
                 if (intent.action == ACTION_THEME_CHANGED) {
+                    org.librehu.dialer.ui.RetroLook.read(intent)
                     onChange(intent.getBooleanExtra("dark", true), intent.getIntExtra("accent", 0))
                 } else {
                     refresh()
@@ -68,7 +69,12 @@ internal class ThemeFollower(
         val launcherTheme =
             runCatching {
                 context.contentResolver.query(THEME_URI, null, null, null, null)?.use { cursor ->
-                    if (cursor.moveToFirst()) (cursor.getInt(0) != 0) to cursor.getInt(1) else null
+                    if (cursor.moveToFirst()) {
+                        org.librehu.dialer.ui.RetroLook.read(cursor)
+                        (cursor.getInt(0) != 0) to cursor.getInt(1)
+                    } else {
+                        null
+                    }
                 }
             }.getOrNull()
         val launcherDark =
