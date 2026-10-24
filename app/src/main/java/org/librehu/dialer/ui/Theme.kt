@@ -56,7 +56,24 @@ data class DialerPalette(
 }
 
 object DialerColors {
-    var palette by mutableStateOf(DialerPalette.fromLauncher(true, 0))
+    private var base: DialerPalette by mutableStateOf(DialerPalette.fromLauncher(true, 0))
+
+    /** The app's palette, or LibreHU Launcher's retro one when its style is retro (same light / dark only). */
+    var palette: DialerPalette
+        get() = RetroLook.palette?.takeIf { it.dark == base.dark }?.let { r ->
+            base.copy(
+                background = r.background,
+                surface = r.surface,
+                surfaceHigh = r.surfaceHigh,
+                accent = r.accent,
+                onAccent = r.onAccent,
+                text = r.text,
+                textDim = r.textDim,
+            )
+        } ?: base
+        set(value) {
+            base = value
+        }
     val Bg get() = palette.background
     val Card get() = palette.surface
     val Raised get() = palette.surfaceHigh
@@ -98,6 +115,7 @@ fun DialerTheme(content: @Composable () -> Unit) {
             )
         }
     MaterialTheme(
+        typography = RetroLook.typography(),
         colorScheme = scheme.withCarRoles(p.accent, p.onAccent, p.surface, p.surfaceHigh, p.text, p.textDim),
         content = content,
     )
