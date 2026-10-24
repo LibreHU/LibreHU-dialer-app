@@ -1,4 +1,0 @@
-#Sat Oct 24 05:45:24 UTC 2026
-base.0=/home/user/librehu-dialer-app/app/build/intermediates/dex/release/minifyReleaseWithR8/classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
