@@ -71,6 +71,13 @@ Règles :
 - Ne jamais ouvrir l'UART de la MCU (`/dev/ttyS1`) : LibreHU-service en est le seul propriétaire.
 - Afficher honnêtement les états « non connecté » / « indisponible » ; ne jamais simuler un appel.
 
+## Appli téléphone (LibreHU Bridge)
+
+Réglable depuis le téléphone par l'appli LibreHU Bridge (Android et iPhone), à travers LibreHU-service : appels (ouverture sur appel, fenêtre d'appel entrant, bulle), apparence et widgets.
+Fournisseur `<paquet>.bridge` (`bridge/BridgeProvider.kt`), réservé aux applis signées avec la clé LibreHU (permission
+`org.librehu.permission.BRIDGE`, vérifiée dans `call()` lui-même) ; format décrit dans
+[LibreHU-service, docs/bridge.md](https://github.com/LibreHU/LibreHU-service/blob/main/docs/bridge.md).
+
 ## Compilation
 
 JDK 17, SDK Android API 37. GitHub Actions : `gradle assembleRelease`, artefact `LibreHU-Dialer` et release `latest-<branche>` (installable avec
