@@ -1,0 +1,58 @@
+[
+    {
+        "merged": "org.librehu.dialer.app-release-4:/layout_widget_keypad.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/layout/widget_keypad.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/drawable_widget_bg_dark.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/drawable/widget_bg_dark.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/drawable_widget_bg_light.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/drawable/widget_bg_light.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/xml_widget_recent_calls_info.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/xml/widget_recent_calls_info.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/layout_widget_dialer_shortcuts.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/layout/widget_dialer_shortcuts.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/layout_widget_recent_calls.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/layout/widget_recent_calls.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/xml_widget_dialer_shortcuts_info.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/xml/widget_dialer_shortcuts_info.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/drawable_widget_chip_dark.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/drawable/widget_chip_dark.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/drawable_ic_launcher_mono.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/drawable/ic_launcher_mono.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/drawable_widget_card_light.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/drawable/widget_card_light.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/drawable_widget_card_dark.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/drawable/widget_card_dark.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/drawable_widget_chip_light.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/drawable/widget_chip_light.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/drawable_ic_dialer.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/drawable/ic_dialer.xml"
+    },
+    {
+        "merged": "org.librehu.dialer.app-release-4:/xml_widget_keypad_info.xml.flat",
+        "source": "org.librehu.dialer.app-main-5:/xml/widget_keypad_info.xml"
+    }
+]

@@ -1,0 +1,448 @@
+attr:alpha:2130771970 reachable from from dex
+attr:font:2130771982 reachable from from dex
+attr:fontProviderAuthority:2130771983 reachable from from dex
+attr:fontProviderCerts:2130771984 reachable from from dex
+attr:fontProviderFallbackQuery:2130771985 reachable from from dex
+attr:fontProviderFetchStrategy:2130771986 reachable from from dex
+attr:fontProviderFetchTimeout:2130771987 reachable from from dex
+attr:fontProviderPackage:2130771988 reachable from from dex
+attr:fontProviderQuery:2130771989 reachable from from dex
+attr:fontProviderSystemFontFamily:2130771990 reachable from from dex
+attr:fontStyle:2130771991 reachable from from dex
+attr:fontVariationSettings:2130771992 reachable from from dex
+attr:fontWeight:2130771993 reachable from from dex
+attr:lStar:2130771995 reachable from from dex
+attr:ttcIndex:2130772015 reachable from from dex
+drawable:ic_dialer:2130968582 reachable from AndroidManifest.xml
+drawable:ic_launcher_mono:2130968583 reachable from AndroidManifest.xml
+drawable:widget_bg_dark:2130968597 reachable from res/layout/widget_dialer_shortcuts.xml
+drawable:widget_bg_light:2130968598 reachable from from dex
+drawable:widget_card_dark:2130968599 reachable from res/layout/widget_dialer_shortcuts.xml
+drawable:widget_card_light:2130968600 reachable from from dex
+drawable:widget_chip_dark:2130968601 reachable from res/layout/widget_dialer_shortcuts.xml
+drawable:widget_chip_light:2130968602 reachable from from dex
+id:accessibility_action_clickable_span:2131034112 reachable from from dex
+id:accessibility_custom_action_0:2131034113 reachable from from dex
+id:accessibility_custom_action_1:2131034114 reachable from from dex
+id:accessibility_custom_action_10:2131034115 reachable from from dex
+id:accessibility_custom_action_11:2131034116 reachable from from dex
+id:accessibility_custom_action_12:2131034117 reachable from from dex
+id:accessibility_custom_action_13:2131034118 reachable from from dex
+id:accessibility_custom_action_14:2131034119 reachable from from dex
+id:accessibility_custom_action_15:2131034120 reachable from from dex
+id:accessibility_custom_action_16:2131034121 reachable from from dex
+id:accessibility_custom_action_17:2131034122 reachable from from dex
+id:accessibility_custom_action_18:2131034123 reachable from from dex
+id:accessibility_custom_action_19:2131034124 reachable from from dex
+id:accessibility_custom_action_2:2131034125 reachable from from dex
+id:accessibility_custom_action_20:2131034126 reachable from from dex
+id:accessibility_custom_action_21:2131034127 reachable from from dex
+id:accessibility_custom_action_22:2131034128 reachable from from dex
+id:accessibility_custom_action_23:2131034129 reachable from from dex
+id:accessibility_custom_action_24:2131034130 reachable from from dex
+id:accessibility_custom_action_25:2131034131 reachable from from dex
+id:accessibility_custom_action_26:2131034132 reachable from from dex
+id:accessibility_custom_action_27:2131034133 reachable from from dex
+id:accessibility_custom_action_28:2131034134 reachable from from dex
+id:accessibility_custom_action_29:2131034135 reachable from from dex
+id:accessibility_custom_action_3:2131034136 reachable from from dex
+id:accessibility_custom_action_30:2131034137 reachable from from dex
+id:accessibility_custom_action_31:2131034138 reachable from from dex
+id:accessibility_custom_action_4:2131034139 reachable from from dex
+id:accessibility_custom_action_5:2131034140 reachable from from dex
+id:accessibility_custom_action_6:2131034141 reachable from from dex
+id:accessibility_custom_action_7:2131034142 reachable from from dex
+id:accessibility_custom_action_8:2131034143 reachable from from dex
+id:accessibility_custom_action_9:2131034144 reachable from from dex
+id:androidx_compose_ui_view_compose_view_context:2131034154 reachable from from dex
+id:androidx_compose_ui_view_composition_context:2131034155 reachable from from dex
+id:auto_clear_focus_behavior_tag:2131034158 reachable from from dex
+id:compose_prefetch_scheduler:2131034162 reachable from from dex
+id:compose_view_saveable_id_tag:2131034163 reachable from from dex
+id:hide_graphics_layer_in_inspector_tag:2131034170 reachable from from dex
+id:hide_in_inspector_tag:2131034172 reachable from from dex
+id:inspection_slot_table_set:2131034176 reachable from from dex
+id:is_pooling_container_tag:2131034177 reachable from from dex
+id:pooling_container_listener_holder_tag:2131034189 reachable from from dex
+id:report_drawn:2131034190 reachable from from dex
+id:tag_accessibility_actions:2131034195 reachable from from dex
+id:tag_accessibility_clickable_spans:2131034196 reachable from from dex
+id:tag_accessibility_heading:2131034197 reachable from int androidx.core.R$id.tag_accessibility_heading
+id:tag_accessibility_pane_title:2131034198 reachable from int androidx.core.R$id.tag_accessibility_pane_title
+id:tag_compat_insets_dispatch:2131034199 reachable from from dex
+id:tag_on_apply_window_listener:2131034200 reachable from from dex
+id:tag_screen_reader_focusable:2131034203 reachable from int androidx.core.R$id.tag_screen_reader_focusable
+id:tag_state_description:2131034204 reachable from from dex
+id:tag_window_insets_animation_callback:2131034209 reachable from from dex
+id:view_tree_disjoint_parent:2131034215 reachable from from dex
+id:view_tree_lifecycle_owner:2131034216 reachable from from dex
+id:view_tree_navigation_event_dispatcher_owner:2131034217 reachable from from dex
+id:view_tree_on_back_pressed_dispatcher_owner:2131034218 reachable from from dex
+id:view_tree_saved_state_registry_owner:2131034219 reachable from from dex
+id:view_tree_view_model_store_owner:2131034220 reachable from from dex
+id:widget_accent_bar:2131034221 reachable from res/layout/widget_dialer_shortcuts.xml
+id:widget_contacts:2131034222 reachable from res/layout/widget_dialer_shortcuts.xml
+id:widget_keypad:2131034223 reachable from res/layout/widget_dialer_shortcuts.xml
+id:widget_keypad_accent_bar:2131034224 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_call:2131034225 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_card:2131034226 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_delete:2131034227 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_k0:2131034228 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_k1:2131034229 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_k2:2131034230 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_k3:2131034231 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_k4:2131034232 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_k5:2131034233 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_k6:2131034234 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_k7:2131034235 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_k8:2131034236 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_k9:2131034237 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_khash:2131034238 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_kstar:2131034239 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_number:2131034240 reachable from res/layout/widget_keypad.xml
+id:widget_keypad_root:2131034241 reachable from res/layout/widget_keypad.xml
+id:widget_open_dialer:2131034242 reachable from res/layout/widget_dialer_shortcuts.xml
+id:widget_recent_accent_bar:2131034243 reachable from res/layout/widget_recent_calls.xml
+id:widget_recent_card:2131034244 reachable from res/layout/widget_recent_calls.xml
+id:widget_recent_line1:2131034245 reachable from res/layout/widget_recent_calls.xml
+id:widget_recent_line2:2131034246 reachable from res/layout/widget_recent_calls.xml
+id:widget_recent_line3:2131034247 reachable from res/layout/widget_recent_calls.xml
+id:widget_recent_open:2131034248 reachable from res/layout/widget_recent_calls.xml
+id:widget_recent_root:2131034249 reachable from res/layout/widget_recent_calls.xml
+id:widget_recent_summary:2131034250 reachable from res/layout/widget_recent_calls.xml
+id:widget_recent_title:2131034251 reachable from res/layout/widget_recent_calls.xml
+id:widget_recents:2131034252 reachable from res/layout/widget_dialer_shortcuts.xml
+id:widget_shortcuts_card:2131034253 reachable from res/layout/widget_dialer_shortcuts.xml
+id:widget_shortcuts_root:2131034254 reachable from res/layout/widget_dialer_shortcuts.xml
+id:widget_subtitle:2131034255 reachable from res/layout/widget_dialer_shortcuts.xml
+id:widget_title:2131034256 reachable from res/layout/widget_dialer_shortcuts.xml
+id:wrapped_composition_tag:2131034257 reachable from from dex
+layout:widget_dialer_shortcuts:2131165193 reachable from res/xml/widget_dialer_shortcuts_info.xml
+layout:widget_keypad:2131165194 reachable from res/xml/widget_keypad_info.xml
+layout:widget_recent_calls:2131165195 reachable from res/xml/widget_recent_calls_info.xml
+string:about_text:2131230720 reachable from from dex
+string:androidx_startup:2131230723 reachable from from dex
+string:app_name:2131230724 reachable from AndroidManifest.xml
+string:call:2131230725 reachable from from dex
+string:call_answer:2131230726 reachable from from dex
+string:call_answer_hold:2131230727 reachable from from dex
+string:call_bubble:2131230728 reachable from from dex
+string:call_bubble_hint:2131230729 reachable from from dex
+string:call_decline:2131230730 reachable from from dex
+string:call_end:2131230731 reachable from from dex
+string:call_failed:2131230732 reachable from from dex
+string:call_hold:2131230733 reachable from from dex
+string:call_incoming:2131230734 reachable from from dex
+string:call_keypad:2131230735 reachable from from dex
+string:call_minimize:2131230736 reachable from from dex
+string:call_missed:2131230737 reachable from from dex
+string:call_mute:2131230738 reachable from from dex
+string:call_on_phone:2131230746 reachable from int org.librehu.dialer.R$string.call_on_phone
+string:call_outgoing:2131230747 reachable from from dex
+string:call_reject:2131230748 reachable from from dex
+string:call_rejected:2131230749 reachable from from dex
+string:call_swap:2131230750 reachable from from dex
+string:call_title:2131230751 reachable from from dex
+string:call_unknown:2131230752 reachable from from dex
+string:call_unmute:2131230753 reachable from from dex
+string:contacts_count:2131230756 reachable from from dex
+string:contacts_empty:2131230757 reachable from from dex
+string:contacts_search:2131230758 reachable from from dex
+string:default_dialer_hint:2131230759 reachable from from dex
+string:default_dialer_no:2131230760 reachable from from dex
+string:default_dialer_set:2131230761 reachable from from dex
+string:default_dialer_yes:2131230762 reachable from from dex
+string:default_popup_window_title:2131230764 reachable from from dex
+string:favorites_empty:2131230766 reachable from from dex
+string:favorites_subtitle:2131230767 reachable from from dex
+string:frequent:2131230768 reachable from from dex
+string:frequent_subtitle:2131230769 reachable from from dex
+string:grant:2131230770 reachable from from dex
+string:in_progress:2131230771 reachable from from dex
+string:incoming_overlay:2131230772 reachable from from dex
+string:incoming_overlay_hint:2131230773 reachable from from dex
+string:incoming_waiting:2131230774 reachable from from dex
+string:indeterminate:2131230775 reachable from from dex
+string:keypad_delete:2131230776 reachable from from dex
+string:keypad_hint:2131230777 reachable from from dex
+string:m3c_dialog:2131230814 reachable from from dex
+string:no_service:2131230845 reachable from from dex
+string:not_selected:2131230846 reachable from from dex
+string:overlay_allow:2131230849 reachable from from dex
+string:permission_call:2131230850 reachable from from dex
+string:permission_calllog:2131230851 reachable from from dex
+string:permission_calllog_text:2131230852 reachable from from dex
+string:permission_contacts:2131230853 reachable from from dex
+string:permission_contacts_text:2131230854 reachable from from dex
+string:permission_granted:2131230855 reachable from from dex
+string:permission_required:2131230856 reachable from from dex
+string:phone_connected:2131230857 reachable from from dex
+string:phone_connected_short:2131230858 reachable from from dex
+string:phone_disconnected:2131230859 reachable from from dex
+string:phone_mismatch:2131230860 reachable from from dex
+string:phone_not_default:2131230861 reachable from from dex
+string:phone_unavailable:2131230862 reachable from from dex
+string:recents_all:2131230865 reachable from from dex
+string:recents_empty:2131230866 reachable from from dex
+string:recents_missed:2131230867 reachable from from dex
+string:recents_subtitle:2131230868 reachable from from dex
+string:selected:2131230869 reachable from from dex
+string:settings_about:2131230870 reachable from from dex
+string:settings_appearance:2131230871 reachable from from dex
+string:settings_permissions:2131230872 reachable from from dex
+string:settings_phone:2131230873 reachable from from dex
+string:settings_subtitle:2131230874 reachable from from dex
+string:settings_theme_hint:2131230875 reachable from from dex
+string:settings_widgets:2131230876 reachable from from dex
+string:state_empty:2131230878 reachable from from dex
+string:state_off:2131230879 reachable from from dex
+string:state_on:2131230880 reachable from from dex
+string:status_active:2131230881 reachable from from dex
+string:status_alerting:2131230882 reachable from from dex
+string:status_dialing:2131230884 reachable from from dex
+string:status_ended:2131230885 reachable from from dex
+string:status_held:2131230886 reachable from from dex
+string:status_ringing:2131230887 reachable from from dex
+string:status_waiting:2131230888 reachable from from dex
+string:switch_role:2131230889 reachable from from dex
+string:tab:2131230890 reachable from from dex
+string:tab_contacts:2131230891 reachable from res/layout/widget_dialer_shortcuts.xml
+string:tab_favorites:2131230892 reachable from from dex
+string:tab_keypad:2131230893 reachable from res/layout/widget_dialer_shortcuts.xml
+string:tab_recents:2131230894 reachable from res/layout/widget_dialer_shortcuts.xml
+string:tab_settings:2131230895 reachable from from dex
+string:template_percent:2131230896 reachable from from dex
+string:theme_auto:2131230897 reachable from from dex
+string:theme_dark:2131230898 reachable from from dex
+string:theme_light:2131230899 reachable from from dex
+string:watcher_channel:2131230902 reachable from from dex
+string:watcher_title:2131230903 reachable from from dex
+string:widget_details:2131230904 reachable from from dex
+string:widget_details_hint:2131230905 reachable from from dex
+string:widget_keypad_call:2131230906 reachable from res/layout/widget_keypad.xml
+string:widget_keypad_delete:2131230907 reachable from res/layout/widget_keypad.xml
+string:widget_keypad_description:2131230908 reachable from res/xml/widget_keypad_info.xml
+string:widget_keypad_hint:2131230909 reachable from res/layout/widget_keypad.xml
+string:widget_keypad_label:2131230910 reachable from AndroidManifest.xml
+string:widget_latest:2131230911 reachable from res/layout/widget_recent_calls.xml
+string:widget_need_permission:2131230912 reachable from from dex
+string:widget_open:2131230913 reachable from res/layout/widget_dialer_shortcuts.xml
+string:widget_open_history:2131230914 reachable from res/layout/widget_recent_calls.xml
+string:widget_quick_actions:2131230915 reachable from res/layout/widget_dialer_shortcuts.xml
+string:widget_recent_calls_description:2131230916 reachable from res/xml/widget_recent_calls_info.xml
+string:widget_shortcuts_description:2131230917 reachable from res/xml/widget_dialer_shortcuts_info.xml
+string:widget_shortcuts_label:2131230918 reachable from AndroidManifest.xml
+string:widget_style:2131230919 reachable from from dex
+string:widget_style_compact:2131230920 reachable from from dex
+string:widget_style_large:2131230921 reachable from from dex
+string:widget_theme:2131230922 reachable from from dex
+style:DialogWindowTheme:2131296256 reachable from from dex
+style:FloatingDialogWindowTheme:2131296259 reachable from int androidx.compose.ui.R$style.FloatingDialogWindowTheme
+style:Theme_LibreHU_Dialer:2131296265 reachable from AndroidManifest.xml
+xml:widget_dialer_shortcuts_info:2131427328 reachable from AndroidManifest.xml
+xml:widget_keypad_info:2131427329 reachable from AndroidManifest.xml
+xml:widget_recent_calls_info:2131427330 reachable from AndroidManifest.xml
+attr:activityAction:2130771968 is not reachable.
+attr:activityName:2130771969 is not reachable.
+attr:alwaysExpand:2130771971 is not reachable.
+attr:animationBackgroundColor:2130771972 is not reachable.
+attr:clearTop:2130771973 is not reachable.
+attr:dragRangeMaxRatio:2130771974 is not reachable.
+attr:dragRangeMinRatio:2130771975 is not reachable.
+attr:embeddingDividerColor:2130771976 is not reachable.
+attr:embeddingDividerType:2130771977 is not reachable.
+attr:embeddingDividerWidthDp:2130771978 is not reachable.
+attr:finishPrimaryWithPlaceholder:2130771979 is not reachable.
+attr:finishPrimaryWithSecondary:2130771980 is not reachable.
+attr:finishSecondaryWithPrimary:2130771981 is not reachable.
+attr:isDraggingToFullscreenAllowed:2130771994 is not reachable.
+attr:nestedScrollViewStyle:2130771996 is not reachable.
+attr:placeholderActivityName:2130771997 is not reachable.
+attr:primaryActivityName:2130771998 is not reachable.
+attr:queryPatterns:2130771999 is not reachable.
+attr:secondaryActivityAction:2130772000 is not reachable.
+attr:secondaryActivityName:2130772001 is not reachable.
+attr:shortcutMatchRequired:2130772002 is not reachable.
+attr:splitChangeAnimation:2130772003 is not reachable.
+attr:splitCloseAnimation:2130772004 is not reachable.
+attr:splitLayoutDirection:2130772005 is not reachable.
+attr:splitMaxAspectRatioInLandscape:2130772006 is not reachable.
+attr:splitMaxAspectRatioInPortrait:2130772007 is not reachable.
+attr:splitMinHeightDp:2130772008 is not reachable.
+attr:splitMinSmallestWidthDp:2130772009 is not reachable.
+attr:splitMinWidthDp:2130772010 is not reachable.
+attr:splitOpenAnimation:2130772011 is not reachable.
+attr:splitRatio:2130772012 is not reachable.
+attr:stickyPlaceholder:2130772013 is not reachable.
+attr:tag:2130772014 is not reachable.
+color:androidx_core_ripple_material_light:2130837504 is not reachable.
+color:androidx_core_secondary_text_default_material_light:2130837505 is not reachable.
+color:call_notification_answer_color:2130837506 is not reachable.
+color:call_notification_decline_color:2130837507 is not reachable.
+color:notification_action_color_filter:2130837508 is not reachable.
+color:notification_icon_bg_color:2130837509 is not reachable.
+color:vector_tint_color:2130837510 is not reachable.
+color:vector_tint_theme_color:2130837511 is not reachable.
+dimen:compat_button_inset_horizontal_material:2130903040 is not reachable.
+dimen:compat_button_inset_vertical_material:2130903041 is not reachable.
+dimen:compat_button_padding_horizontal_material:2130903042 is not reachable.
+dimen:compat_button_padding_vertical_material:2130903043 is not reachable.
+dimen:compat_control_corner_material:2130903044 is not reachable.
+dimen:compat_notification_large_icon_max_height:2130903045 is not reachable.
+dimen:compat_notification_large_icon_max_width:2130903046 is not reachable.
+dimen:notification_action_icon_size:2130903047 is not reachable.
+dimen:notification_action_text_size:2130903048 is not reachable.
+dimen:notification_big_circle_margin:2130903049 is not reachable.
+dimen:notification_content_margin_start:2130903050 is not reachable.
+dimen:notification_large_icon_height:2130903051 is not reachable.
+dimen:notification_large_icon_width:2130903052 is not reachable.
+dimen:notification_main_column_padding_top:2130903053 is not reachable.
+dimen:notification_media_narrow_margin:2130903054 is not reachable.
+dimen:notification_right_icon_size:2130903055 is not reachable.
+dimen:notification_right_side_padding_top:2130903056 is not reachable.
+dimen:notification_small_icon_background_padding:2130903057 is not reachable.
+dimen:notification_small_icon_size_as_large:2130903058 is not reachable.
+dimen:notification_subtext_size:2130903059 is not reachable.
+dimen:notification_top_pad:2130903060 is not reachable.
+dimen:notification_top_pad_large_text:2130903061 is not reachable.
+drawable:ic_call_answer:2130968576 is not reachable.
+drawable:ic_call_answer_low:2130968577 is not reachable.
+drawable:ic_call_answer_video:2130968578 is not reachable.
+drawable:ic_call_answer_video_low:2130968579 is not reachable.
+drawable:ic_call_decline:2130968580 is not reachable.
+drawable:ic_call_decline_low:2130968581 is not reachable.
+drawable:notification_action_background:2130968584 is not reachable.
+drawable:notification_bg:2130968585 is not reachable.
+drawable:notification_bg_low:2130968586 is not reachable.
+drawable:notification_bg_low_normal:2130968587 is not reachable.
+drawable:notification_bg_low_pressed:2130968588 is not reachable.
+drawable:notification_bg_normal:2130968589 is not reachable.
+drawable:notification_bg_normal_pressed:2130968590 is not reachable.
+drawable:notification_icon_background:2130968591 is not reachable.
+drawable:notification_oversize_large_icon_bg:2130968592 is not reachable.
+drawable:notification_template_icon_bg:2130968593 is not reachable.
+drawable:notification_template_icon_low_bg:2130968594 is not reachable.
+drawable:notification_tile_bg:2130968595 is not reachable.
+drawable:notify_panel_notification_icon_bg:2130968596 is not reachable.
+integer:m3c_window_layout_in_display_cutout_mode:2131099648 is not reachable.
+integer:status_bar_notification_info_maxnum:2131099649 is not reachable.
+layout:custom_dialog:2131165184 is not reachable.
+layout:ime_base_split_test_activity:2131165185 is not reachable.
+layout:ime_secondary_split_test_activity:2131165186 is not reachable.
+layout:notification_action:2131165187 is not reachable.
+layout:notification_action_tombstone:2131165188 is not reachable.
+layout:notification_template_custom_big:2131165189 is not reachable.
+layout:notification_template_icon_group:2131165190 is not reachable.
+layout:notification_template_part_chronometer:2131165191 is not reachable.
+layout:notification_template_part_time:2131165192 is not reachable.
+string:androidx_compose_foundation_autofill:2131230721 is not reachable.
+string:androidx_compose_ui_autofill:2131230722 is not reachable.
+string:call_notification_answer_action:2131230739 is not reachable.
+string:call_notification_answer_video_action:2131230740 is not reachable.
+string:call_notification_decline_action:2131230741 is not reachable.
+string:call_notification_hang_up_action:2131230742 is not reachable.
+string:call_notification_incoming_text:2131230743 is not reachable.
+string:call_notification_ongoing_text:2131230744 is not reachable.
+string:call_notification_screening_text:2131230745 is not reachable.
+string:call_on_phone:2131230746 is not reachable.
+string:close_drawer:2131230754 is not reachable.
+string:close_sheet:2131230755 is not reachable.
+string:default_error_message:2131230763 is not reachable.
+string:dropdown_menu:2131230765 is not reachable.
+string:m3c_bottom_sheet_collapse_description:2131230778 is not reachable.
+string:m3c_bottom_sheet_dismiss_description:2131230779 is not reachable.
+string:m3c_bottom_sheet_drag_handle_description:2131230780 is not reachable.
+string:m3c_bottom_sheet_expand_description:2131230781 is not reachable.
+string:m3c_bottom_sheet_pane_title:2131230782 is not reachable.
+string:m3c_date_input_headline:2131230783 is not reachable.
+string:m3c_date_input_headline_description:2131230784 is not reachable.
+string:m3c_date_input_invalid_for_pattern:2131230785 is not reachable.
+string:m3c_date_input_invalid_not_allowed:2131230786 is not reachable.
+string:m3c_date_input_invalid_year_range:2131230787 is not reachable.
+string:m3c_date_input_label:2131230788 is not reachable.
+string:m3c_date_input_no_input_description:2131230789 is not reachable.
+string:m3c_date_input_title:2131230790 is not reachable.
+string:m3c_date_picker_headline:2131230791 is not reachable.
+string:m3c_date_picker_headline_description:2131230792 is not reachable.
+string:m3c_date_picker_navigate_to_year_description:2131230793 is not reachable.
+string:m3c_date_picker_no_selection_description:2131230794 is not reachable.
+string:m3c_date_picker_scroll_to_earlier_years:2131230795 is not reachable.
+string:m3c_date_picker_scroll_to_later_years:2131230796 is not reachable.
+string:m3c_date_picker_switch_to_calendar_mode:2131230797 is not reachable.
+string:m3c_date_picker_switch_to_day_selection:2131230798 is not reachable.
+string:m3c_date_picker_switch_to_input_mode:2131230799 is not reachable.
+string:m3c_date_picker_switch_to_next_month:2131230800 is not reachable.
+string:m3c_date_picker_switch_to_previous_month:2131230801 is not reachable.
+string:m3c_date_picker_switch_to_year_selection:2131230802 is not reachable.
+string:m3c_date_picker_title:2131230803 is not reachable.
+string:m3c_date_picker_today_description:2131230804 is not reachable.
+string:m3c_date_picker_year_picker_pane_title:2131230805 is not reachable.
+string:m3c_date_range_input_invalid_range_input:2131230806 is not reachable.
+string:m3c_date_range_input_title:2131230807 is not reachable.
+string:m3c_date_range_picker_day_in_range:2131230808 is not reachable.
+string:m3c_date_range_picker_end_headline:2131230809 is not reachable.
+string:m3c_date_range_picker_scroll_to_next_month:2131230810 is not reachable.
+string:m3c_date_range_picker_scroll_to_previous_month:2131230811 is not reachable.
+string:m3c_date_range_picker_start_headline:2131230812 is not reachable.
+string:m3c_date_range_picker_title:2131230813 is not reachable.
+string:m3c_dropdown_menu_collapsed:2131230815 is not reachable.
+string:m3c_dropdown_menu_expanded:2131230816 is not reachable.
+string:m3c_dropdown_menu_toggle:2131230817 is not reachable.
+string:m3c_floating_toolbar_collapse:2131230818 is not reachable.
+string:m3c_floating_toolbar_expand:2131230819 is not reachable.
+string:m3c_search_bar_search:2131230820 is not reachable.
+string:m3c_snackbar_dismiss:2131230821 is not reachable.
+string:m3c_snackbar_pane_title:2131230822 is not reachable.
+string:m3c_suggestions_available:2131230823 is not reachable.
+string:m3c_time_input_dialog_title:2131230824 is not reachable.
+string:m3c_time_picker_am:2131230825 is not reachable.
+string:m3c_time_picker_dialog_title:2131230826 is not reachable.
+string:m3c_time_picker_hour:2131230827 is not reachable.
+string:m3c_time_picker_hour_24h_suffix:2131230828 is not reachable.
+string:m3c_time_picker_hour_selection:2131230829 is not reachable.
+string:m3c_time_picker_hour_suffix:2131230830 is not reachable.
+string:m3c_time_picker_hour_text_field:2131230831 is not reachable.
+string:m3c_time_picker_minute:2131230832 is not reachable.
+string:m3c_time_picker_minute_selection:2131230833 is not reachable.
+string:m3c_time_picker_minute_suffix:2131230834 is not reachable.
+string:m3c_time_picker_minute_text_field:2131230835 is not reachable.
+string:m3c_time_picker_period_toggle_description:2131230836 is not reachable.
+string:m3c_time_picker_pm:2131230837 is not reachable.
+string:m3c_time_picker_toggle_keyboard:2131230838 is not reachable.
+string:m3c_time_picker_toggle_touch:2131230839 is not reachable.
+string:m3c_tooltip_long_press_label:2131230840 is not reachable.
+string:m3c_tooltip_pane_description:2131230841 is not reachable.
+string:m3c_wide_navigation_rail_close_rail:2131230842 is not reachable.
+string:m3c_wide_navigation_rail_pane_title:2131230843 is not reachable.
+string:navigation_menu:2131230844 is not reachable.
+string:open_on_call:2131230847 is not reachable.
+string:open_on_call_hint:2131230848 is not reachable.
+string:range_end:2131230863 is not reachable.
+string:range_start:2131230864 is not reachable.
+string:snackbar_pane_title:2131230877 is not reachable.
+string:status_bar_notification_info_overflow:2131230883 is not reachable.
+string:tooltip_description:2131230900 is not reachable.
+string:tooltip_label:2131230901 is not reachable.
+style:EdgeToEdgeFloatingDialogTheme:2131296257 is not reachable.
+style:EdgeToEdgeFloatingDialogWindowTheme:2131296258 is not reachable.
+style:FloatingDialogWindowTheme:2131296259 is not reachable.
+style:TextAppearance_Compat_Notification:2131296260 is not reachable.
+style:TextAppearance_Compat_Notification_Info:2131296261 is not reachable.
+style:TextAppearance_Compat_Notification_Line2:2131296262 is not reachable.
+style:TextAppearance_Compat_Notification_Time:2131296263 is not reachable.
+style:TextAppearance_Compat_Notification_Title:2131296264 is not reachable.
+style:Widget_Compat_NotificationActionContainer:2131296266 is not reachable.
+style:Widget_Compat_NotificationActionText:2131296267 is not reachable.
+styleable:ActivityFilter:2131361792 is not reachable.
+styleable:ActivityRule:2131361793 is not reachable.
+styleable:Capability:2131361794 is not reachable.
+styleable:ColorStateListItem:2131361795 is not reachable.
+styleable:DividerAttributes:2131361796 is not reachable.
+styleable:FontFamily:2131361797 is not reachable.
+styleable:FontFamilyFont:2131361798 is not reachable.
+styleable:FontFamilyProviderFallback:2131361799 is not reachable.
+styleable:GradientColor:2131361800 is not reachable.
+styleable:GradientColorItem:2131361801 is not reachable.
+styleable:SplitPairFilter:2131361802 is not reachable.
+styleable:SplitPairRule:2131361803 is not reachable.
+styleable:SplitPlaceholderRule:2131361804 is not reachable.

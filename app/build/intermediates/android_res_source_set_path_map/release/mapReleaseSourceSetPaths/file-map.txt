@@ -1,0 +1,9 @@
+org.librehu.dialer.app-pngs-0 /home/user/librehu-dialer-app/app/build/generated/res/pngs/release
+org.librehu.dialer.app-updated_navigation_xml-1 /home/user/librehu-dialer-app/app/build/generated/updated_navigation_xml/release
+org.librehu.dialer.app-packageReleaseResources-2 /home/user/librehu-dialer-app/app/build/intermediates/incremental/release/packageReleaseResources/merged.dir
+org.librehu.dialer.app-packageReleaseResources-3 /home/user/librehu-dialer-app/app/build/intermediates/incremental/release/packageReleaseResources/stripped.dir
+org.librehu.dialer.app-merged-not-compiled-resources-4 /home/user/librehu-dialer-app/app/build/intermediates/merged-not-compiled-resources/release
+org.librehu.dialer.app-release-5 /home/user/librehu-dialer-app/app/build/intermediates/merged_res/release/mergeReleaseResources
+org.librehu.dialer.app-main-6 /home/user/librehu-dialer-app/app/src/main/res
+org.librehu.dialer.app-release-7 /home/user/librehu-dialer-app/app/src/release/res
+gradleHome-0 /root/.gradle
