@@ -13,6 +13,8 @@ import android.net.Uri
 import android.provider.CallLog
 import android.widget.RemoteViews
 import androidx.core.content.ContextCompat
+import org.librehu.dialer.ui.RetroLook
+import org.librehu.dialer.ui.SegmentViews
 
 internal data class WidgetTheme(
     val dark: Boolean,
@@ -21,7 +23,33 @@ internal data class WidgetTheme(
     val cardRes: Int,
     val chipRes: Int,
     val autoStyle: Boolean,
-)
+    val primary: Int,
+    val muted: Int,
+    /** LibreHU Launcher's retro palette (its style is retro, same light / dark), else null: the drawables above. */
+    val retro: RetroLook.WidgetColors? = null,
+) {
+    fun background(
+        views: RemoteViews,
+        id: Int,
+    ) = paint(views, id, backgroundRes, retro?.surface)
+
+    fun card(
+        views: RemoteViews,
+        id: Int,
+    ) = paint(views, id, cardRes, retro?.surface)
+
+    fun chip(
+        views: RemoteViews,
+        id: Int,
+    ) = paint(views, id, chipRes, retro?.surfaceHigh)
+
+    private fun paint(
+        views: RemoteViews,
+        id: Int,
+        res: Int,
+        color: Int?,
+    ) = if (color != null) views.setInt(id, "setBackgroundColor", color) else views.setInt(id, "setBackgroundResource", res)
+}
 
 internal object DialerWidgetTheme {
     private const val LAUNCHER_THEME_URI = "content://org.librehu.launcher.theme/theme"
@@ -30,7 +58,12 @@ internal object DialerWidgetTheme {
         val launcher =
             runCatching {
                 context.contentResolver.query(Uri.parse(LAUNCHER_THEME_URI), null, null, null, null)?.use { cursor ->
-                    if (cursor.moveToFirst()) (cursor.getInt(0) != 0) to cursor.getInt(1) else null
+                    if (cursor.moveToFirst()) {
+                        RetroLook.read(cursor)
+                        (cursor.getInt(0) != 0) to cursor.getInt(1)
+                    } else {
+                        null
+                    }
                 }
             }.getOrNull()
 
@@ -42,11 +75,15 @@ internal object DialerWidgetTheme {
                 ThemeMode.LIGHT -> false
                 ThemeMode.DARK -> true
             }
-        val accent = launcher?.second?.takeIf { it != 0 } ?: if (dark) 0xFF8AB4F8.toInt() else 0xFF1A73E8.toInt()
+        val retro = if (launcher != null) RetroLook.widget(dark) else null
+        val accent = retro?.accent ?: launcher?.second?.takeIf { it != 0 } ?: if (dark) 0xFF8AB4F8.toInt() else 0xFF1A73E8.toInt()
 
         return WidgetTheme(
             dark = dark,
             accent = accent,
+            primary = retro?.text ?: if (dark) 0xFFE8EAED.toInt() else 0xFF202124.toInt(),
+            muted = retro?.textDim ?: if (dark) 0xFF9AA0A6.toInt() else 0xFF5F6368.toInt(),
+            retro = retro,
             backgroundRes = if (dark) R.drawable.widget_bg_dark else R.drawable.widget_bg_light,
             cardRes = if (dark) R.drawable.widget_card_dark else R.drawable.widget_card_light,
             chipRes = if (dark) R.drawable.widget_chip_dark else R.drawable.widget_chip_light,
@@ -92,14 +129,14 @@ class DialerShortcutsWidget : AppWidgetProvider() {
     ) {
         ids.forEach { id ->
             val theme = DialerWidgetTheme.resolve(context)
-            val primary = if (theme.dark) 0xFFE8EAED.toInt() else 0xFF202124.toInt()
-            val muted = if (theme.dark) 0xFF9AA0A6.toInt() else 0xFF5F6368.toInt()
+            val primary = theme.primary
+            val muted = theme.muted
             val views =
-                RemoteViews(context.packageName, R.layout.widget_dialer_shortcuts).apply {
-                    setInt(R.id.widget_shortcuts_root, "setBackgroundResource", theme.backgroundRes)
-                    setInt(R.id.widget_shortcuts_card, "setBackgroundResource", theme.cardRes)
+                SegmentViews(context, R.layout.widget_dialer_shortcuts, RetroLook.segment).apply {
+                    theme.background(this, R.id.widget_shortcuts_root)
+                    theme.card(this, R.id.widget_shortcuts_card)
                     listOf(R.id.widget_open_dialer, R.id.widget_contacts, R.id.widget_recents, R.id.widget_keypad).forEach {
-                        setInt(it, "setBackgroundResource", theme.chipRes)
+                        theme.chip(this, it)
                         setTextColor(it, primary)
                     }
                     setInt(R.id.widget_accent_bar, "setBackgroundColor", theme.accent)
@@ -141,13 +178,13 @@ class DialerRecentCallsWidget : AppWidgetProvider() {
         id: Int,
     ) {
         val theme = DialerWidgetTheme.resolve(context)
-        val primary = if (theme.dark) 0xFFE8EAED.toInt() else 0xFF202124.toInt()
-        val muted = if (theme.dark) 0xFF9AA0A6.toInt() else 0xFF5F6368.toInt()
+        val primary = theme.primary
+        val muted = theme.muted
         val views =
-            RemoteViews(context.packageName, R.layout.widget_recent_calls).apply {
-                setInt(R.id.widget_recent_root, "setBackgroundResource", theme.backgroundRes)
-                setInt(R.id.widget_recent_card, "setBackgroundResource", theme.cardRes)
-                setInt(R.id.widget_recent_open, "setBackgroundResource", theme.chipRes)
+            SegmentViews(context, R.layout.widget_recent_calls, RetroLook.segment).apply {
+                theme.background(this, R.id.widget_recent_root)
+                theme.card(this, R.id.widget_recent_card)
+                theme.chip(this, R.id.widget_recent_open)
                 setInt(R.id.widget_recent_accent_bar, "setBackgroundColor", theme.accent)
                 setTextColor(R.id.widget_recent_title, primary)
                 setTextColor(R.id.widget_recent_summary, muted)
@@ -157,7 +194,7 @@ class DialerRecentCallsWidget : AppWidgetProvider() {
                 setOnClickPendingIntent(R.id.widget_recent_root, DialerWidgetIntents.open(context, "RECENTS", id * 10 + 5))
                 setOnClickPendingIntent(R.id.widget_recent_open, DialerWidgetIntents.open(context, "RECENTS", id * 10 + 6))
                 listOf(R.id.widget_recent_line1, R.id.widget_recent_line2, R.id.widget_recent_line3).forEach {
-                    setInt(it, "setBackgroundResource", theme.chipRes)
+                    theme.chip(this, it)
                     setTextColor(it, primary)
                     setTextViewTextSize(it, android.util.TypedValue.COMPLEX_UNIT_SP, if (theme.autoStyle) 12f else 11f)
                 }
