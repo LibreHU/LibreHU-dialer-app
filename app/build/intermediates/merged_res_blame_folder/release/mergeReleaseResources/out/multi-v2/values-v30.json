@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "org.librehu.dialer.app-mergeReleaseResources-1:/values-v30/values-v30.xml",
+            "map": [
+                {
+                    "source": "/root/.gradle/caches/9.7.1/transforms/9eb9a9e8d9ce1ff6fbbd0553026594e5/transformed/material3/res/values-v30/values-v30.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "72",
+                        "endOffsets": "123"
+                    }
+                }
+            ]
+        }
+    ]
+}

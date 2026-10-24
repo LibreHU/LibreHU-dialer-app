@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dial pad widget: number typed in the widget, call through LibreHU Dialer. RemoteViews classes only. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_keypad_root"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="10dp"
+    android:background="@drawable/widget_bg_dark">
+
+    <LinearLayout
+        android:id="@+id/widget_keypad_card"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:padding="8dp" android:background="@drawable/widget_card_dark">
+
+        <FrameLayout android:id="@+id/widget_keypad_accent_bar"
+            android:layout_width="5dp" android:layout_height="36dp"
+            android:layout_marginEnd="10dp" android:background="#8AB4F8" />
+
+        <TextView android:id="@+id/widget_keypad_number"
+            android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:hint="@string/widget_keypad_hint" android:textColorHint="#9AA0A6"
+            android:textColor="#E8EAED" android:textSize="24sp" android:maxLines="1" android:ellipsize="start" />
+
+        <TextView android:id="@+id/widget_keypad_delete"
+            android:layout_width="56dp" android:layout_height="44dp" android:gravity="center"
+            android:text="⌫" android:textColor="#E8EAED" android:textSize="22sp"
+            android:background="@drawable/widget_chip_dark" android:contentDescription="@string/widget_keypad_delete" />
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:orientation="vertical" android:layout_marginTop="6dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+            android:orientation="horizontal">
+            <TextView android:id="@+id/widget_keypad_k1"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_margin="3dp" android:gravity="center" android:text="1"
+                android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
+            <TextView android:id="@+id/widget_keypad_k2"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_margin="3dp" android:gravity="center" android:text="2"
+                android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
+            <TextView android:id="@+id/widget_keypad_k3"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_margin="3dp" android:gravity="center" android:text="3"
+                android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+            android:orientation="horizontal">
+            <TextView android:id="@+id/widget_keypad_k4"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_margin="3dp" android:gravity="center" android:text="4"
+                android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
+            <TextView android:id="@+id/widget_keypad_k5"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_margin="3dp" android:gravity="center" android:text="5"
+                android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
+            <TextView android:id="@+id/widget_keypad_k6"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_margin="3dp" android:gravity="center" android:text="6"
+                android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+            android:orientation="horizontal">
+            <TextView android:id="@+id/widget_keypad_k7"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_margin="3dp" android:gravity="center" android:text="7"
+                android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
+            <TextView android:id="@+id/widget_keypad_k8"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_margin="3dp" android:gravity="center" android:text="8"
+                android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
+            <TextView android:id="@+id/widget_keypad_k9"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_margin="3dp" android:gravity="center" android:text="9"
+                android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+            android:orientation="horizontal">
+            <TextView android:id="@+id/widget_keypad_kstar"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_margin="3dp" android:gravity="center" android:text="*"
+                android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
+            <TextView android:id="@+id/widget_keypad_k0"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_margin="3dp" android:gravity="center" android:text="0"
+                android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
+            <TextView android:id="@+id/widget_keypad_khash"
+                android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_margin="3dp" android:gravity="center" android:text="#"
+                android:textColor="#E8EAED" android:textSize="22sp" android:background="@drawable/widget_chip_dark" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView android:id="@+id/widget_keypad_call"
+        android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="6dp"
+        android:gravity="center" android:text="@string/widget_keypad_call"
+        android:textColor="#8AB4F8" android:textSize="18sp" android:textStyle="bold"
+        android:background="@drawable/widget_chip_dark" />
+</LinearLayout>
