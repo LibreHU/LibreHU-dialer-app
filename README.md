@@ -10,9 +10,9 @@ Inspirée de l'ergonomie d'Android Auto, sans en être un client ni reprendre se
 |---|---|
 | ![Favoris](docs/screenshots/favorites.png)<br>Favoris | ![Récents](docs/screenshots/recents.png)<br>Récents |
 | ![Contacts](docs/screenshots/contacts.png)<br>Contacts | ![Clavier](docs/screenshots/keypad.png)<br>Clavier |
-| ![Réglages](docs/screenshots/settings.png)<br>Réglages |  |
+| ![Réglages](docs/screenshots/settings.png)<br>Réglages | ![Réglages (2)](docs/screenshots/settings-2.png)<br>Réglages (2) |
 
-Captures sur l'émulateur Android 9 (1280×720, 160 dpi comme l'autoradio), sans autoradio branché : les valeurs du véhicule et de la MCU sont vides. Refaites-les avec l'action **Screenshots** de [LibreHU-OTA-app](https://github.com/LibreHU/LibreHU-OTA-app/tree/main/screenshots).
+Captures sur l'émulateur Android 9 (1280×720, 160 dpi comme l'autoradio), sans autoradio branché : les valeurs du véhicule et de la MCU sont vides. Refaites-les avec l'action **Screenshots** de [LibreHU-OTA-app](https://github.com/LibreHU/LibreHU-OTA-app/tree/main/screenshots). Galerie : [librehu.github.io/screenshots/dialer.html](https://librehu.github.io/screenshots/dialer.html).
 
 ## Fonctions
 
