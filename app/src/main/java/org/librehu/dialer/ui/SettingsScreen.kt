@@ -84,11 +84,12 @@ fun SettingsScreen(
     }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(22.dp)).background(DialerColors.Card),
-        contentPadding = PaddingValues(20.dp),
+        // In the launcher's car styles the frame around (DialerStyled) gives the title and the panel.
+        modifier = if (carStyled) Modifier.fillMaxSize() else Modifier.fillMaxSize().clip(RoundedCornerShape(22.dp)).background(DialerColors.Card),
+        contentPadding = PaddingValues(if (carStyled) 4.dp else 20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        item { Heading(stringResource(R.string.tab_settings), stringResource(R.string.settings_subtitle)) }
+        if (!carStyled) item { Heading(stringResource(R.string.tab_settings), stringResource(R.string.settings_subtitle)) }
 
         item {
             // Read so that the section is redrawn on resume.
@@ -221,6 +222,10 @@ private fun Section(
     title: String,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    if (carStyled) {
+        StyledCard(title) { content() }
+        return
+    }
     Column(
         Modifier
             .fillMaxWidth()
@@ -241,6 +246,10 @@ private fun SwitchLine(
     checked: Boolean,
     onChange: (Boolean) -> Unit,
 ) {
+    if (carStyled) {
+        StyledSwitchRow(title, subtitle, checked, onChange = onChange)
+        return
+    }
     Row(Modifier.fillMaxWidth().clickable { onChange(!checked) }, verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
             Text(title, color = DialerColors.Text, fontSize = 17.sp)
