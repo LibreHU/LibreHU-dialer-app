@@ -31,7 +31,6 @@ import androidx.compose.material.icons.automirrored.filled.CallReceived
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -87,6 +86,10 @@ fun Pill(
     icon: ImageVector? = null,
     onClick: () -> Unit,
 ) {
+    if (carStyled) {
+        StyledPill(label, selected, icon, onClick = onClick)
+        return
+    }
     Row(
         Modifier
             .clip(RoundedCornerShape(50))
@@ -348,7 +351,7 @@ fun NumberPicker(
     onDismiss: () -> Unit,
     onPick: (String) -> Unit,
 ) {
-    AlertDialog(
+    CarAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(contact.name) },
         text = {
