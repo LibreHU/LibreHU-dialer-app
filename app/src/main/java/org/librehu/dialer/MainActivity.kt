@@ -31,6 +31,12 @@ import org.librehu.dialer.ui.Tab
 
 /** Phone app: favourites, recent calls, contacts, keypad, the call screen and settings. */
 class MainActivity : ComponentActivity() {
+    /** A click on each tap, the sound of LibreHU Launcher's style (see KeyClick). */
+    override fun dispatchTouchEvent(ev: android.view.MotionEvent): Boolean {
+        org.librehu.dialer.ui.KeyClick.onTouch(this, ev, org.librehu.dialer.ui.RetroLook.style)
+        return super.dispatchTouchEvent(ev)
+    }
+
     private lateinit var themeFollower: ThemeFollower
     private lateinit var phone: PhoneBackend
     private val state =
