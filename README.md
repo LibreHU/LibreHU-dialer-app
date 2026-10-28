@@ -13,6 +13,8 @@ Cette branche : **`librehu-service`** ([LibreHU-service](https://github.com/Libr
 | ![Favoris](docs/screenshots/favorites.png)<br>Favoris | ![Récents](docs/screenshots/recents.png)<br>Récents |
 | ![Contacts](docs/screenshots/contacts.png)<br>Contacts | ![Clavier](docs/screenshots/keypad.png)<br>Clavier |
 | ![Réglages](docs/screenshots/settings.png)<br>Réglages | ![Réglages (2)](docs/screenshots/settings-2.png)<br>Réglages (2) |
+| ![Style Modularer Infotainment-Baukasten : clavier](docs/screenshots/style-mib-keypad.png)<br>Style Modularer Infotainment-Baukasten : clavier | ![Style Modularer Infotainment-Baukasten : appel](docs/screenshots/style-mib-call.png)<br>Style Modularer Infotainment-Baukasten : appel |
+| ![Style LHU-Link : menu](docs/screenshots/style-lhu-link-menu.png)<br>Style LHU-Link : menu | ![Style LHU-Link : historique](docs/screenshots/style-lhu-link-history.png)<br>Style LHU-Link : historique |
 
 Captures sur l'émulateur Android 9 (1280×720, 160 dpi comme l'autoradio), sans autoradio branché : les valeurs du véhicule et de la MCU sont vides. Refaites-les avec l'action **Screenshots** de [LibreHU-OTA-app](https://github.com/LibreHU/LibreHU-OTA-app/tree/main/screenshots). Galerie : [librehu.github.io/screenshots/dialer.html](https://librehu.github.io/screenshots/dialer.html).
 
@@ -95,6 +97,27 @@ rend Jetpack Compose nettement plus fluide ([Compose performance](https://develo
 règles gardent aussi ce qui n'est appelé que par son nom (méthodes natives, helpers root lancés par `app_process`). Si
 une fonction plante avec « class / method not found », regarder `usage.txt` dans l'artefact *R8 reports* de la CI (ce
 que R8 a retiré) et ajouter une règle `-keep`.
+
+**Styles Modularer Infotainment-Baukasten et LHU-Link de LibreHU Launcher** : c'est le launcher qui les choisit et les demande à l'appli (il publie `style` = `factory` ou `ambient`, comme pour le style rétro) ; l'appli suit tout de suite : palette noire du style même en mode jour, coins carrés partout, police Source Sans 3 pour Modularer Infotainment-Baukasten (SIL OFL 1.1, `third_party/SourceSans3-LICENSE.md`), lettres fines pour LHU-Link. Rien à régler dans l'appli.
+
+Les écrans prennent aussi la **mise en page** de ces styles (`ui/DialerStyled.kt`, éléments communs dans `ui/CarKit.kt`) :
+
+- **Modularer Infotainment-Baukasten** : titre de l'écran sur un trait de la couleur d'accent, téléphone connecté à
+  droite ; Favoris en tuiles (puis les derniers appels), Récents (Tous / Manqués), Contacts par lettre, Clavier
+  (numéro encadré, effacer, appeler, contacts trouvés par numéro ou T9, touches encadrées) ; touches du bas Favoris,
+  Récents, Contacts, Clavier, Appel (pendant un appel réduit), Réglages. Pendant un appel, les touches du bas
+  deviennent celles de l'appel (Décrocher / Refuser, ou Muet, Attente / Permuter, Sur le téléphone, Raccrocher,
+  Retour aux listes) et le clavier DTMF est à droite.
+- **LHU-Link** : menu **Téléphone** de six tuiles (Répertoire, Historique des appels, Composer un numéro, Favoris,
+  Smartphone = réglages Bluetooth d'Android, Réglages) ; Répertoire avec la lettre dans un carré gris, la photo
+  encadrée et la fiche du contact (grande photo encadrée, une ligne par numéro) ; Historique avec ses quatre filtres
+  en icônes (tous, manqués, reçus, émis) ; Composer un numéro (champ, effacer, touches encadrées) ; écran d'appel
+  (grande photo encadrée, nom, numéro, durée, touches Attente / Sur le téléphone / Muet / Clavier). Barre du bas :
+  Retour, l'action de l'écran (Chercher, Appeler, Raccrocher, Refuser / Répondre) et Options. Le menu est sauté quand
+  une autre appli demande un onglet (`org.librehu.dialer.extra.OPEN_TAB`, lien `tel:`).
+
+Mise en page reprise des styles de LibreHU Launcher, avec les icônes Material de LibreHU : aucun logo, nom, icône,
+police ni image d'un constructeur.
 
 **Style rétro et police de LibreHU Launcher** : quand le launcher est en style rétro (les couleurs d'un afficheur
 d'autoradio tirées de sa couleur d'accent, couleur RGB comprise), cette appli prend sa palette (jour ou nuit) ; quand

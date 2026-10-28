@@ -121,7 +121,10 @@ class MainActivity : ComponentActivity() {
 
     private fun handle(intent: Intent?) {
         intent ?: return
-        Tab.parse(intent.getStringExtra(EXTRA_OPEN_TAB))?.let { state.tab.value = it }
+        Tab.parse(intent.getStringExtra(EXTRA_OPEN_TAB))?.let {
+            state.tab.value = it
+            state.tabRequest.value++
+        }
         if (intent.getBooleanExtra(EXTRA_SHOW_CALL, false)) state.showCall.value++
         intent.getStringExtra(EXTRA_CALL_NUMBER)?.let {
             intent.removeExtra(EXTRA_CALL_NUMBER)
@@ -131,6 +134,7 @@ class MainActivity : ComponentActivity() {
         if ((intent.action == Intent.ACTION_DIAL || intent.action == Intent.ACTION_VIEW) && data?.scheme == "tel") {
             state.number.value = data.schemeSpecificPart.orEmpty()
             state.tab.value = Tab.KEYPAD
+            state.tabRequest.value++
         }
     }
 

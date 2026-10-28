@@ -110,4 +110,13 @@
     <string name="widget_keypad_hint">Number</string>
     <string name="widget_keypad_delete">Delete</string>
     <string name="widget_keypad_call">Call</string>
+    <!-- LibreHU Launcher's car styles (Modularer Infotainment-Baukasten, LHU-Link) -->
+    <string name="car_setup">Setup</string>
+    <string name="dial_phone">Phone</string>
+    <string name="dial_directory">Contacts</string>
+    <string name="dial_history">Call history</string>
+    <string name="dial_number">Dial a number</string>
+    <string name="dial_smartphone">Smartphone</string>
+    <string name="dial_search">Search</string>
+    <string name="dial_outgoing">Outgoing call</string>
 </resources>
