@@ -84,6 +84,8 @@ class DialerState(
     val showCall: MutableState<Int>,
     /** Bumped when permissions change, to reload contacts and log. */
     val dataVersion: MutableState<Int>,
+    /** Bumped when another app or a link asks for a tab (the ambient style then skips its phone menu). */
+    val tabRequest: MutableState<Int> = androidx.compose.runtime.mutableIntStateOf(0),
 )
 
 @Composable
@@ -109,6 +111,17 @@ fun DialerApp(
     LaunchedEffect(state.showCall.value, call?.id) { minimized = false }
     val showCall = call != null && (!minimized || call.status.incoming)
     val tab = state.tab.value
+
+    // LibreHU Launcher's car styles: the launcher asks the app for them (see RetroLook).
+    if (RetroLook.factory || RetroLook.ambient) {
+        val screens =
+            DialerScreens(
+                phone, state, calls, link, contacts, recents, call, showCall, { minimized = it }, onDial, onGrant, settings,
+                PhoneBook.canReadContacts(context), PhoneBook.canReadCallLog(context),
+            )
+        if (RetroLook.factory) FactoryDialer(screens) else AmbientDialer(screens)
+        return
+    }
 
     Row(Modifier.fillMaxSize().background(DialerColors.Bg).padding(14.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
         NavRail(if (showCall) null else tab) {
