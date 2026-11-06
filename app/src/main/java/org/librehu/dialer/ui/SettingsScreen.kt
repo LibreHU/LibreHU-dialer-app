@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -76,6 +77,7 @@ fun SettingsScreen(
     var bubble by remember { mutableStateOf(DialerPreferences.callBubble(context)) }
     var openOnCall by remember { mutableStateOf(DialerPreferences.openOnCall(context)) }
     var incomingOverlay by remember { mutableStateOf(DialerPreferences.incomingOverlay(context)) }
+    var info by remember { mutableStateOf(false) }
     // Re-read permissions and default app when coming back from Android's screens.
     var resumed by remember { mutableIntStateOf(0) }
     LifecycleResumeEffect(Unit) {
@@ -207,9 +209,11 @@ fun SettingsScreen(
                         runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull().orEmpty()
                     }
                 Text(stringResource(R.string.about_text, version, PhoneBackends.NAME), color = DialerColors.Muted, fontSize = 13.sp)
+                Pill(stringResource(R.string.info_title), icon = Icons.Default.Info) { info = true }
             }
         }
     }
+    if (info) InfoDialog { info = false }
 }
 
 private fun granted(
